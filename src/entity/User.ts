@@ -6,8 +6,8 @@ import {Field, ID, ObjectType} from "type-graphql";
 export class User extends BaseEntity {
 
     @Field(() => ID)
-    @PrimaryGeneratedColumn()
-    id: number;
+    @PrimaryGeneratedColumn("uuid")
+    id: string;
 
     @Field()
     @Column()

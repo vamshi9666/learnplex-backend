@@ -44,7 +44,7 @@ describe('Me', () => {
         expect(response).toMatchObject({
             data: {
                 me: {
-                    id: `${user.id}`,
+                    id: user.id,
                     firstName: user.firstName,
                     lastName: user.lastName,
                     email: user.email

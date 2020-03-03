@@ -5,7 +5,7 @@ import {createSchema} from "../utils/createSchema";
 interface Options {
     source: string;
     variableValues?: Maybe<{[key: string]: any;}>;
-    userId?: number
+    userId?: string
 }
 
 let schema: GraphQLSchema;

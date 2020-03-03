@@ -16,17 +16,17 @@ export class LoginResolver {
         const [user] = await User.find({ where: { email }, take: 1 });
 
         if (!user) {
-            return null
+            throw new Error('User with that email does not exist');
         }
 
         const valid = await bcrypt.compare(password, user.password);
 
         if (!valid) {
-            return null
+            throw new Error('Email and password does not match');
         }
 
         if (!user.confirmed) {
-            return null
+            throw new Error('Please confirm your email before logging in')
         }
 
         ctx.req.session!.userId = user.id;
