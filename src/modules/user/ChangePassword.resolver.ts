@@ -6,16 +6,17 @@ import {ChangePasswordInput} from "./changePassword/ChangePasswordInput";
 import {forgotPasswordPrefix} from "../constants/redisPrefixes";
 import {redis} from "../../redis";
 import {MyContext} from "../../types/MyContext";
-import {sendRefreshToken, createRefreshToken} from "../../utils/auth";
+import {sendRefreshToken, createRefreshToken, createAccessToken} from "../../utils/auth";
+import {LoginResponse} from "./login/LoginResponse";
 
 @Resolver()
 export class ChangePasswordResolver {
 
-    @Mutation(() => User, { nullable: true })
+    @Mutation(() => LoginResponse, { nullable: true })
     async changePassword(
         @Arg("data") { token, password }: ChangePasswordInput,
         @Ctx() ctx: MyContext
-    ): Promise<User | null> {
+    ): Promise<LoginResponse | null> {
         const userId = await redis.get(forgotPasswordPrefix + token);
 
         if (!userId) {
@@ -35,7 +36,7 @@ export class ChangePasswordResolver {
 
         sendRefreshToken(ctx.res, createRefreshToken(user));
 
-        return user;
+        return { accessToken: createAccessToken(user.id), user }
     }
 
 }

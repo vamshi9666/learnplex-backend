@@ -5,6 +5,8 @@ import {User} from "../../entity/User";
 import {RegisterInput} from "./Register/RegisterInput";
 import {isAuth} from "../middleware/isAuth";
 import {MyContext} from "../../types/MyContext";
+import {sendEmail} from "../utils/sendEmail";
+import {createConfirmationUrl} from "../utils/createConfirmationUrl";
 
 @Resolver()
 export class RegisterResolver {
@@ -23,18 +25,22 @@ export class RegisterResolver {
     ): Promise<boolean> {
         const hashedPassword: string = await hash(password, 12);
 
+        let user;
+
         try {
-            await User.insert({
+            user = await User.create({
                 firstName,
                 lastName,
                 email,
                 username,
                 password: hashedPassword
-            });
+            }).save();
         } catch (e) {
             console.error(e);
             return false;
         }
+
+        await sendEmail(email, await createConfirmationUrl(user.id));
 
         return true;
     }
