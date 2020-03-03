@@ -1,15 +1,17 @@
-import "reflect-metadata"
-import express from 'express'
-import session from "express-session";
-import connectRedis from "connect-redis";
+import "reflect-metadata";
+import express from 'express';
+import cookieParser from "cookie-parser";
 import cors from "cors";
-import {ApolloServer} from "apollo-server-express"
+import {verify} from "jsonwebtoken";
+import {ApolloServer} from "apollo-server-express";
 import {createConnection} from "typeorm";
-import { separateOperations } from "graphql";
+import {separateOperations} from "graphql";
 import {fieldExtensionsEstimator, getComplexity, simpleEstimator} from "graphql-query-complexity";
 
-import {redis} from "./redis";
 import {createSchema} from "./utils/createSchema";
+import {User} from "./entity/User";
+import {ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET} from "./constants";
+import {createCookiesAndLogin, createTokens} from "./utils/auth";
 
 const main = async () => {
     await createConnection();
@@ -75,24 +77,47 @@ const main = async () => {
        origin: 'http://localhost:3000'
    }));
 
-   const RedisStore = connectRedis(session);
+    app.use(cookieParser());
 
-    app.use(
-        session({
-            store: new RedisStore({
-                client: redis as any
-            }),
-            name: "qid",
-            secret: "dpofkreigjfijnvfnvjfidjbvofi",
-            resave: false,
-            saveUninitialized: false,
-            cookie: {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === "production",
-                maxAge: 1000 * 60 * 60 * 24 * 7 * 365 // 7 years
-            }
-        })
-    );
+   app.use(async (req: any, res, next) => {
+       const accessToken = req.cookies['access-token'];
+       const refreshToken = req.cookies['refresh-token'];
+
+       console.log(accessToken, refreshToken);
+
+       if (!refreshToken && !accessToken) {
+           return next();
+       }
+
+       try {
+           const data = verify(accessToken, ACCESS_TOKEN_SECRET) as any;
+           req.userId = data.userId;
+           return next();
+       } catch {}
+
+       if (!refreshToken) {
+           return next();
+       }
+
+       let data;
+
+       try {
+           data = verify(refreshToken, REFRESH_TOKEN_SECRET) as any;
+       } catch {
+           return next();
+       }
+
+       const [user] = await User.find({ where: { id: data.userId } });
+
+       if (!user || user.refreshTokenCount !== data.count) {
+           return next()
+       }
+
+       const tokens = createTokens(user);
+       createCookiesAndLogin({ req, res }, tokens.refreshToken, tokens.accessToken, user.id);
+
+       next()
+   });
 
 
    apolloServer.applyMiddleware({ app });

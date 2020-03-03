@@ -1,4 +1,5 @@
 import {Ctx, Query, Resolver} from "type-graphql";
+
 import {MyContext} from "../../types/MyContext";
 import {User} from "../../entity/User";
 
@@ -6,11 +7,12 @@ import {User} from "../../entity/User";
 export class MeResolver {
 
     @Query(() => User, { nullable: true } )
-    async me(@Ctx() ctx: MyContext): Promise<User | undefined> {
-        if (!ctx.req.session!.userId) {
+    async me(@Ctx() { req }: MyContext): Promise<User | undefined> {
+        if (!(req as any).userId) {
             return undefined
         }
 
-        return User.findOne(ctx.req.session!.userId)
+        const [user] = await User.find({ where: { id: (req as any).userId } });
+        return user;
     }
 }

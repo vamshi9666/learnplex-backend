@@ -1,8 +1,9 @@
-import {Arg, Ctx, Mutation, Resolver} from "type-graphql";
 import bcrypt from "bcryptjs";
+import {Arg, Ctx, Mutation, Resolver} from "type-graphql";
 
 import {User} from "../../entity/User";
 import {MyContext} from "../../types/MyContext";
+import {createCookiesAndLogin, createTokens} from "../../utils/auth";
 
 @Resolver()
 export class LoginResolver {
@@ -29,7 +30,9 @@ export class LoginResolver {
             return null
         }
 
-        ctx.req.session!.userId = user.id;
+        const { refreshToken, accessToken } = createTokens(user);
+        createCookiesAndLogin(ctx, refreshToken, accessToken, user.id);
+        (ctx.req as any).userId = user.id;
 
         return user
     }

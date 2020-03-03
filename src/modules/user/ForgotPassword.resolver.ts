@@ -1,9 +1,9 @@
+import {v4} from "uuid";
 import {Arg, Mutation, Resolver} from "type-graphql";
 
 import {redis} from "../../redis";
 import {User} from "../../entity/User";
 import {sendEmail} from "../utils/sendEmail";
-import {v4} from "uuid";
 import {forgotPasswordPrefix} from "../constants/redisPrefixes";
 
 @Resolver()

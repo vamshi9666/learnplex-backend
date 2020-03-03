@@ -1,5 +1,6 @@
 import {graphql, GraphQLSchema} from "graphql";
 import {Maybe} from "type-graphql";
+
 import {createSchema} from "../utils/createSchema";
 
 interface Options {
@@ -20,9 +21,7 @@ export const graphqlCall = async ({ source, variableValues, userId }: Options) =
         variableValues,
         contextValue: {
             req: {
-                session: {
-                    userId
-                }
+                userId
             },
             res: {
                 clearCookie: jest.fn()
