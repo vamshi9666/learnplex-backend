@@ -17,13 +17,7 @@ afterAll(async () => {
 
 const registerMutation = `
     mutation Register($data: RegisterInput!) {
-        register(data: $data) {
-            id
-            firstName
-            lastName
-            email
-            name
-        }
+        register(data: $data)
     }
 `;
 
@@ -43,17 +37,13 @@ describe('Register', () => {
         });
         expect(response).toMatchObject({
             data: {
-                register: {
-                    firstName: user.firstName,
-                    lastName: user.lastName,
-                    email: user.email
-                }
+                register: true
             }
         });
 
         const [dbUser] = await User.find({ where: { email: user.email } });
         expect(dbUser).toBeDefined();
-        expect(dbUser.confirmed).toBeFalsy();
+        expect(dbUser.confirmed).toBeTruthy();
         expect(dbUser.firstName).toBe(user.firstName);
         expect(dbUser.lastName).toBe(user.lastName);
         expect(dbUser.email).toBe(user.email);

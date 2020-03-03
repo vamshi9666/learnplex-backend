@@ -1,18 +1,22 @@
-import {Ctx, Query, Resolver} from "type-graphql";
+import {Ctx, Query, Resolver, UseMiddleware} from "type-graphql";
 
 import {MyContext} from "../../types/MyContext";
 import {User} from "../../entity/User";
+import {isAuth} from "../middleware/isAuth";
 
 @Resolver()
 export class MeResolver {
 
+    @UseMiddleware(isAuth)
     @Query(() => User, { nullable: true } )
-    async me(@Ctx() { req }: MyContext): Promise<User | undefined> {
-        if (!(req as any).userId) {
-            return undefined
-        }
+    async me(@Ctx() { payload }: MyContext): Promise<User | undefined> {
 
-        const [user] = await User.find({ where: { id: (req as any).userId } });
-        return user;
+        try {
+            const [user] = await User.find({ where: { id: payload!.userId } });
+            return user;
+        } catch (e) {
+            console.error(e);
+            return undefined;
+        }
     }
 }

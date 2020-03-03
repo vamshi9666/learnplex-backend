@@ -6,7 +6,7 @@ import {ChangePasswordInput} from "./changePassword/ChangePasswordInput";
 import {forgotPasswordPrefix} from "../constants/redisPrefixes";
 import {redis} from "../../redis";
 import {MyContext} from "../../types/MyContext";
-import {createCookiesAndLogin, createTokens} from "../../utils/auth";
+import {sendRefreshToken, createRefreshToken} from "../../utils/auth";
 
 @Resolver()
 export class ChangePasswordResolver {
@@ -33,8 +33,7 @@ export class ChangePasswordResolver {
         user.password = await bcrypt.hash(password, 12);
         await user.save();
 
-        const { refreshToken, accessToken } = createTokens(user);
-        createCookiesAndLogin(ctx, refreshToken, accessToken, user.id);
+        sendRefreshToken(ctx.res, createRefreshToken(user));
 
         return user;
     }

@@ -2,7 +2,7 @@ import {Field, ID, ObjectType} from "type-graphql";
 import {Entity, PrimaryGeneratedColumn, Column, BaseEntity} from "typeorm";
 
 @ObjectType()
-@Entity()
+@Entity("users")
 export class User extends BaseEntity {
 
     @Field(() => ID)
@@ -18,7 +18,7 @@ export class User extends BaseEntity {
     lastName: string;
 
     @Column("int", { default: 0 })
-    refreshTokenCount: number;
+    tokenVersion: number;
 
     @Field()
     name(): string {
@@ -32,7 +32,7 @@ export class User extends BaseEntity {
     @Column()
     password: string;
 
-    @Column("bool", { default: false })
+    @Column("bool", { default: true })
     confirmed: boolean;
 
 }

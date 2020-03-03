@@ -1,20 +1,27 @@
 import {sign} from "jsonwebtoken";
 import ms from "ms";
+import {Response} from "express";
 
 import {User} from "../entity/User";
-import {MyContext} from "../types/MyContext";
-import {ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET} from "../constants";
 
-export const createTokens = (user: User) => {
-    const refreshToken = sign({ userId: user.id, count: user.refreshTokenCount },
-        REFRESH_TOKEN_SECRET, { expiresIn: "7d" });
-    const accessToken = sign({ userId: user.id }, ACCESS_TOKEN_SECRET, { expiresIn: "15m" });
-
-    return { refreshToken, accessToken };
+export const createAccessToken = (userId: number) => {
+    return sign({ userId },
+        process.env.ACCESS_TOKEN_SECRET!,
+        { expiresIn: "15m" }
+    );
 };
 
-export const createCookiesAndLogin = (ctx: MyContext, refreshToken: string, accessToken: string, userId: number) => {
-    ctx.res.cookie("refresh-token", refreshToken, { maxAge: ms("7d") });
-    ctx.res.cookie("access-token", accessToken, { maxAge: ms("15m") });
-    (ctx.req as any).userId = userId;
+export const createRefreshToken = (user: User) => {
+  return sign({ userId: user.id, tokenVersion: user.tokenVersion },
+      process.env.REFRESH_TOKEN_SECRET!,
+      { expiresIn: "7d" }
+      );
 };
+
+export const sendRefreshToken = (res: Response, refreshToken: string) => {
+    res.cookie(process.env.REFRESH_COOKIE_NAME!,
+        refreshToken,
+        {maxAge: ms("7d"), httpOnly: true}
+        );
+};
+

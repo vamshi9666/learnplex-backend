@@ -1,37 +1,41 @@
-import bcrypt from 'bcryptjs';
-import {Arg, Mutation, Query, Resolver, UseMiddleware} from "type-graphql";
+import { hash } from 'bcryptjs';
+import {Arg, Ctx, Mutation, Query, Resolver, UseMiddleware} from "type-graphql";
 
 import {User} from "../../entity/User";
 import {RegisterInput} from "./Register/RegisterInput";
 import {isAuth} from "../middleware/isAuth";
-import {sendEmail} from "../utils/sendEmail";
-import {createConfirmationUrl} from "../utils/createConfirmationUrl";
+import {MyContext} from "../../types/MyContext";
 
 @Resolver()
 export class RegisterResolver {
 
     @UseMiddleware(isAuth)
     @Query(() => String )
-    async hello() {
-        return "Hello World"
+    async hello(
+        @Ctx() {payload}: MyContext
+    ) {
+        return `your user id is ${payload!.userId}`
     }
 
-    @Mutation(() => User )
+    @Mutation(() => Boolean )
     async register(
         @Arg("data") {firstName, lastName, email, password}: RegisterInput
-    ): Promise<User> {
-        const hashedPassword: string = await bcrypt.hash(password, 12);
+    ): Promise<boolean> {
+        const hashedPassword: string = await hash(password, 12);
 
-        const user: User = await User.create({
-            firstName,
-            lastName,
-            email,
-            password: hashedPassword
-        }).save();
+        try {
+            await User.insert({
+                firstName,
+                lastName,
+                email,
+                password: hashedPassword
+            });
+        } catch (e) {
+            console.error(e);
+            return false;
+        }
 
-        await sendEmail(user.email, await createConfirmationUrl(user.id));
-
-        return user;
+        return true;
     }
 
 }

@@ -6,7 +6,7 @@ import {LoginResolver} from "../modules/user/Login.resolver";
 import {LogoutResolver} from "../modules/user/Logout.resolver";
 import {MeResolver} from "../modules/user/Me.resolver";
 import {RegisterResolver} from "../modules/user/Register.resolver";
-import {InvalidateTokensResolver} from "../modules/user/InvalidateTokens.resolver";
+import {RevokeTokensForUserResolver} from "../modules/user/RevokeTokensForUserResolver";
 
 export const createSchema = () => buildSchema({
     resolvers: [
@@ -17,7 +17,7 @@ export const createSchema = () => buildSchema({
         LogoutResolver,
         MeResolver,
         RegisterResolver,
-        InvalidateTokensResolver
+        RevokeTokensForUserResolver
     ],
     authChecker: ({ context: { req } }) => {
         return !!req.userId;

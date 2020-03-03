@@ -1,19 +1,13 @@
 import {Ctx, Mutation, Resolver} from "type-graphql";
+
 import {MyContext} from "../../types/MyContext";
+import {sendRefreshToken} from "../../utils/auth";
 
 @Resolver()
 export class LogoutResolver {
     @Mutation(() => Boolean)
-    async logout(@Ctx() ctx: MyContext): Promise<boolean> {
-        return new Promise((resolve, reject) => {
-            try {
-                (ctx.req as any).userId = null;
-                ctx.res.clearCookie('refresh-token');
-                ctx.res.clearCookie('access-token');
-                resolve(true);
-            } catch {
-                reject(false);
-            }
-        })
+    async logout(@Ctx() { res }: MyContext): Promise<boolean> {
+        await sendRefreshToken(res, "");
+        return true;
     }
 }

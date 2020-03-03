@@ -26,6 +26,6 @@ export const graphqlCall = async ({ source, variableValues, userId }: Options) =
             res: {
                 clearCookie: jest.fn()
             }
-        }
+        },
     });
 };
