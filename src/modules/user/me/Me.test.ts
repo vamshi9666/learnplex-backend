@@ -15,9 +15,9 @@ afterAll(async () => {
     await connection.close()
 });
 
-const registerMutation = `
-    mutation Register($data: RegisterInput!) {
-        register(data: $data) {
+const meQuery = `
+    query {
+        me {
             id
             firstName
             lastName
@@ -27,35 +27,41 @@ const registerMutation = `
     }
 `;
 
-describe('Register', () => {
-    it("creates user", async () => {
-        const user = {
+describe('Me', () => {
+    it("gets user", async () => {
+        const user = await User.create({
             firstName: faker.name.firstName(),
             lastName: faker.name.lastName(),
             email: faker.internet.email(),
             password: faker.internet.password(8)
-        };
+        }).save();
+
         const response = await graphqlCall({
-            source: registerMutation,
-            variableValues: {
-                data: user
-            }
+            source: meQuery,
+            userId: user.id
         });
+
         expect(response).toMatchObject({
             data: {
-                register: {
+                me: {
+                    id: `${user.id}`,
                     firstName: user.firstName,
                     lastName: user.lastName,
                     email: user.email
                 }
             }
+        })
+    });
+
+    it("returns null", async () => {
+        const response = await graphqlCall({
+            source: meQuery
         });
 
-        const [dbUser] = await User.find({ where: { email: user.email } });
-        expect(dbUser).toBeDefined();
-        expect(dbUser.confirmed).toBeFalsy();
-        expect(dbUser.firstName).toBe(user.firstName);
-        expect(dbUser.lastName).toBe(user.lastName);
-        expect(dbUser.email).toBe(user.email);
+        expect(response).toMatchObject({
+            data: {
+                me: null
+            }
+        })
     })
 });
