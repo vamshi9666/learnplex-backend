@@ -39,7 +39,7 @@ const main = async () => {
             return res.send({ ok: false, accessToken: "" })
         }
 
-        const [user] = await User.find({ where: { id: payload.userId } });
+        const [user] = await User.find({ where: { id: payload.userId }, take: 1 });
 
         if (!user) {
             console.error(`User ${payload.userId} is not defined`);

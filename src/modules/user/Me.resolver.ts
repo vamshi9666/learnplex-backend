@@ -12,7 +12,7 @@ export class MeResolver {
     async me(@Ctx() { payload }: MyContext): Promise<User | undefined> {
 
         try {
-            const [user] = await User.find({ where: { id: payload!.userId } });
+            const [user] = await User.find({ where: { id: payload!.userId }, take: 1 });
             return user;
         } catch (e) {
             console.error(e);

@@ -22,7 +22,7 @@ export class ChangePasswordResolver {
             return null;
         }
 
-        const [user] = await User.find({ where: { id: userId } });
+        const [user] = await User.find({ where: { id: userId }, take: 1 });
 
         if (!user) {
             return null;

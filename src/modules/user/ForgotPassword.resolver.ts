@@ -13,7 +13,7 @@ export class ForgotPasswordResolver {
     async forgotPassword(
         @Arg("email") email: string
     ): Promise<boolean> {
-        const [user] = await User.find({ where: { email } });
+        const [user] = await User.find({ where: { email }, take: 1 });
 
         if (!user) {
             return true

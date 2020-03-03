@@ -12,7 +12,7 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-    await connection.close()
+    await connection.close();
 });
 
 const registerMutation = `
@@ -27,7 +27,8 @@ describe('Register', () => {
             firstName: faker.name.firstName(),
             lastName: faker.name.lastName(),
             email: faker.internet.email(),
-            password: faker.internet.password(8)
+            password: faker.internet.password(8),
+            username: faker.internet.userName()
         };
         const response = await graphqlCall({
             source: registerMutation,
@@ -41,11 +42,12 @@ describe('Register', () => {
             }
         });
 
-        const [dbUser] = await User.find({ where: { email: user.email } });
+        const [dbUser] = await User.find({ where: { email: user.email }, take: 1 });
         expect(dbUser).toBeDefined();
         expect(dbUser.confirmed).toBeTruthy();
         expect(dbUser.firstName).toBe(user.firstName);
         expect(dbUser.lastName).toBe(user.lastName);
+        expect(dbUser.username).toBe(user.username);
         expect(dbUser.email).toBe(user.email);
     })
 });

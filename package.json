@@ -51,6 +51,6 @@
   "scripts": {
     "start": "ts-node-dev --ignore-watch node_modules --respawn src/index.ts",
     "db:setup": "ts-node ./src/test-utils/setup.ts",
-    "test": "npm run db:setup && jest --runInBand --detectOpenHandles"
+    "test": "npm run db:setup && jest --runInBand --detectOpenHandles --forceExit"
   }
 }

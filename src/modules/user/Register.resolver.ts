@@ -19,7 +19,7 @@ export class RegisterResolver {
 
     @Mutation(() => Boolean )
     async register(
-        @Arg("data") {firstName, lastName, email, password}: RegisterInput
+        @Arg("data") {firstName, lastName, email, password, username}: RegisterInput
     ): Promise<boolean> {
         const hashedPassword: string = await hash(password, 12);
 
@@ -28,6 +28,7 @@ export class RegisterResolver {
                 firstName,
                 lastName,
                 email,
+                username,
                 password: hashedPassword
             });
         } catch (e) {
