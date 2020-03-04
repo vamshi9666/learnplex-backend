@@ -1,5 +1,8 @@
+import {hash} from "bcryptjs";
 import {Field, ID, ObjectType} from "type-graphql";
-import {Entity, PrimaryGeneratedColumn, Column, BaseEntity} from "typeorm";
+import {Entity, PrimaryGeneratedColumn, Column, BaseEntity, BeforeInsert} from "typeorm";
+
+import {UserRole} from "./user/UserRole.enum";
 
 @ObjectType()
 @Entity("users")
@@ -40,4 +43,17 @@ export class User extends BaseEntity {
     @Column("bool", { default: false })
     confirmed: boolean;
 
+    @Field(() => [UserRole])
+    @Column({
+        type: "enum",
+        enum: UserRole,
+        array: true,
+        default: [UserRole.USER]
+    })
+    roles: UserRole[];
+
+    @BeforeInsert()
+    async hashPassword() {
+        this.password = await hash(this.password, 12);
+    }
 }

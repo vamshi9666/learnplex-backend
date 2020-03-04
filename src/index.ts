@@ -2,6 +2,7 @@ import "dotenv/config";
 import "reflect-metadata";
 import express from 'express';
 import cookieParser from "cookie-parser";
+import bodyParser from "body-parser";
 import cors from "cors";
 import {verify} from "jsonwebtoken";
 import {ApolloServer} from "apollo-server-express";
@@ -12,6 +13,8 @@ import {fieldExtensionsEstimator, getComplexity, simpleEstimator} from "graphql-
 import {createSchema} from "./utils/createSchema";
 import {createAccessToken, createRefreshToken, sendRefreshToken} from "./utils/auth";
 import {User} from "./entity/User.entity";
+import {UserRole} from "./entity/user/UserRole.enum";
+import {getAuthorizationPayloadFromToken} from "./modules/middleware/isAuthorized";
 
 const main = async () => {
     const app = express();
@@ -22,6 +25,36 @@ const main = async () => {
     }));
 
     app.use(cookieParser());
+    app.use(bodyParser.json());
+
+    app.post('/modify_user_roles', async (req, res) => {
+        // TODO: Check if authorized, Right now we are just checking if user is authenticated
+        try {
+            getAuthorizationPayloadFromToken({ req, res });
+        } catch (e) {
+            console.log(e);
+            return res.send({ ok: false, message: 'Not authorized' });
+        }
+
+        const [user] = await User.find({ where: { id: req.body.userId }, take: 1 });
+        const role: UserRole = (UserRole as any)[req.body.role];
+        const type = req.body.type;
+
+        if (!role) {
+            return res.send({ ok: false, message: 'invalid role' });
+        }
+        if (type !== 'ADD' && type !== 'REMOVE') {
+            return res.send({ ok: false, message: 'invalid operation' });
+        }
+        if (type === 'ADD' && !user.roles.includes(role)) {
+            user.roles.push(role);
+        }
+        if(type === 'REMOVE' && user.roles.includes(role)) {
+            user.roles.splice(user.roles.indexOf(role), 1);
+        }
+        await user.save();
+        return res.send({ ok: true, message: 'Modified user roles' });
+    });
 
     app.post('/refresh_token', async (req, res) => {
         const token = req.cookies[`${process.env.REFRESH_COOKIE_NAME}`];

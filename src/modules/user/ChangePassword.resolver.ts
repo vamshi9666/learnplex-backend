@@ -1,5 +1,5 @@
+import {hash} from "bcryptjs";
 import {Arg, Ctx, Mutation, Resolver} from "type-graphql";
-import bcrypt from "bcryptjs";
 
 import {User} from "../../entity/User.entity";
 import {ChangePasswordInput} from "./changePassword/ChangePasswordInput";
@@ -31,7 +31,7 @@ export class ChangePasswordResolver {
 
         await redis.del(forgotPasswordPrefix + token);
 
-        user.password = await bcrypt.hash(password, 12);
+        user.password = await hash(password, 12);
         await user.save();
 
         sendRefreshToken(ctx.res, createRefreshToken(user));
