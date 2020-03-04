@@ -1,13 +1,13 @@
 import {Ctx, Query, Resolver, UseMiddleware} from "type-graphql";
 
 import {MyContext} from "../../types/MyContext";
-import {User} from "../../entity/User";
-import {isAuth} from "../middleware/isAuth";
+import {User} from "../../entity/User.entity";
+import {isAuthorized} from "../middleware/isAuthorized";
 
 @Resolver()
 export class MeResolver {
 
-    @UseMiddleware(isAuth)
+    @UseMiddleware(isAuthorized)
     @Query(() => User, { nullable: true } )
     async me(@Ctx() { payload }: MyContext): Promise<User | undefined> {
 

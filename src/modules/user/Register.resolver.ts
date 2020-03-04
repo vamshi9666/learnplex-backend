@@ -1,9 +1,9 @@
 import { hash } from 'bcryptjs';
 import {Arg, Ctx, Mutation, Query, Resolver, UseMiddleware} from "type-graphql";
 
-import {User} from "../../entity/User";
+import {User} from "../../entity/User.entity";
 import {RegisterInput} from "./Register/RegisterInput";
-import {isAuth} from "../middleware/isAuth";
+import {isAuthorized} from "../middleware/isAuthorized";
 import {MyContext} from "../../types/MyContext";
 import {sendEmail} from "../utils/sendEmail";
 import {createConfirmationUrl} from "../utils/createConfirmationUrl";
@@ -11,7 +11,7 @@ import {createConfirmationUrl} from "../utils/createConfirmationUrl";
 @Resolver()
 export class RegisterResolver {
 
-    @UseMiddleware(isAuth)
+    @UseMiddleware(isAuthorized)
     @Query(() => String )
     async hello(
         @Ctx() {payload}: MyContext

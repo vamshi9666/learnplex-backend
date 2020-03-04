@@ -3,7 +3,7 @@ import faker from "faker";
 
 import {testConnection} from "../../../test-utils/testConnection";
 import {graphqlCall} from "../../../test-utils/graphqlCall";
-import {User} from "../../../entity/User";
+import {User} from "../../../entity/User.entity";
 
 let connection: Connection;
 
@@ -44,7 +44,7 @@ describe('Register', () => {
 
         const [dbUser] = await User.find({ where: { email: user.email }, take: 1 });
         expect(dbUser).toBeDefined();
-        expect(dbUser.confirmed).toBeTruthy();
+        expect(dbUser.confirmed).toBeFalsy();
         expect(dbUser.firstName).toBe(user.firstName);
         expect(dbUser.lastName).toBe(user.lastName);
         expect(dbUser.username).toBe(user.username);

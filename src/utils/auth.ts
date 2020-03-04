@@ -2,7 +2,7 @@ import {sign} from "jsonwebtoken";
 import ms from "ms";
 import {Response} from "express";
 
-import {User} from "../entity/User";
+import {User} from "../entity/User.entity";
 
 export const createAccessToken = (userId: number) => {
     return sign({ userId },

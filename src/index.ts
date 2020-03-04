@@ -11,7 +11,7 @@ import {fieldExtensionsEstimator, getComplexity, simpleEstimator} from "graphql-
 
 import {createSchema} from "./utils/createSchema";
 import {createAccessToken, createRefreshToken, sendRefreshToken} from "./utils/auth";
-import {User} from "./entity/User";
+import {User} from "./entity/User.entity";
 
 const main = async () => {
     const app = express();
@@ -105,7 +105,9 @@ const main = async () => {
                             );
                         }
                         // And here we can e.g. subtract the complexity point from hourly API calls limit.
-                        console.log("Used query complexity points:", complexity);
+                        if (complexity > 0) {
+                            console.log("Used query complexity points:", complexity);
+                        }
                     },
                 }),
             },

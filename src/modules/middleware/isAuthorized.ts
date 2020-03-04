@@ -3,7 +3,7 @@ import {verify} from "jsonwebtoken";
 
 import {MyContext} from "../../types/MyContext";
 
-export const isAuth: MiddlewareFn<MyContext> = async ({ context }, next) => {
+export const isAuthorized: MiddlewareFn<MyContext> = async ({ context }, next) => {
     const authorization = context.req.headers['authorization'] as string;
 
     if (!authorization) {
