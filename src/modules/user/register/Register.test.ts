@@ -24,8 +24,7 @@ const registerMutation = `
 describe('Register', () => {
   it('creates user', async () => {
     const user = {
-      firstName: faker.name.firstName(),
-      lastName: faker.name.lastName(),
+      name: faker.name.firstName(),
       email: faker.internet.email(),
       password: faker.internet.password(8),
       username: faker.internet.userName()
@@ -45,8 +44,7 @@ describe('Register', () => {
     const [dbUser] = await User.find({ where: { email: user.email }, take: 1 })
     expect(dbUser).toBeDefined()
     expect(dbUser.confirmed).toBeFalsy()
-    expect(dbUser.firstName).toBe(user.firstName)
-    expect(dbUser.lastName).toBe(user.lastName)
+    expect(dbUser.name).toBe(user.name)
     expect(dbUser.username).toBe(user.username)
     expect(dbUser.email).toBe(user.email)
   })

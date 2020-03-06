@@ -1,5 +1,5 @@
 import { hash } from 'bcryptjs'
-import { Field, ID, ObjectType } from 'type-graphql'
+import { Field, ID, Int, ObjectType } from 'type-graphql'
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -17,21 +17,12 @@ export class User extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number
 
-  @Field()
+  @Field({ nullable: true })
   @Column()
-  firstName: string
-
-  @Field()
-  @Column()
-  lastName: string
+  name: string
 
   @Column('int', { default: 0 })
   tokenVersion: number
-
-  @Field()
-  name(): string {
-    return `${this.firstName} ${this.lastName}`
-  }
 
   @Field()
   @Column('text', { unique: true })
@@ -56,6 +47,10 @@ export class User extends BaseEntity {
     default: [UserRole.USER]
   })
   roles: UserRole[]
+
+  @Field(() => Int, { nullable: true })
+  @Column('int', { default: null })
+  githubId: number
 
   @BeforeInsert()
   async hashPassword(): Promise<void> {

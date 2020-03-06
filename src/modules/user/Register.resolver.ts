@@ -10,14 +10,13 @@ export class RegisterResolver {
   @Mutation(() => Boolean)
   async register(
     @Arg('data')
-    { firstName, lastName, email, password, username }: RegisterInput
+    { name, email, password, username }: RegisterInput
   ): Promise<boolean> {
     let user
 
     try {
       user = await User.create({
-        firstName,
-        lastName,
+        name,
         email,
         username,
         password // hashing this in @BeforeInsert hook in User.entity.ts

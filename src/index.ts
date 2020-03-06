@@ -4,6 +4,7 @@ import express from 'express'
 import cookieParser from 'cookie-parser'
 import bodyParser from 'body-parser'
 import cors from 'cors'
+import passport from 'passport'
 import { verify } from 'jsonwebtoken'
 import { ApolloServer } from 'apollo-server-express'
 import { createConnection } from 'typeorm'
@@ -13,6 +14,8 @@ import {
   getComplexity,
   simpleEstimator
 } from 'graphql-query-complexity'
+import { Strategy as GitHubStrategy } from 'passport-github2'
+import { generate } from 'generate-password'
 
 import { createSchema } from './utils/createSchema'
 import {
@@ -24,6 +27,7 @@ import {
 import { User } from './entity/User.entity'
 import { UserRole } from './entity/user/UserRole.enum'
 import { getAuthorizationPayloadFromToken } from './modules/middleware/isAuthorized'
+import { VerifyCallback } from 'passport-oauth2'
 
 const main = async (): Promise<void> => {
   const app = express()
@@ -37,6 +41,68 @@ const main = async (): Promise<void> => {
 
   app.use(cookieParser())
   app.use(bodyParser.json())
+  app.use(passport.initialize())
+
+  passport.use(
+    new GitHubStrategy(
+      {
+        clientID: process.env.GITHUB_CLIENT_ID!,
+        clientSecret: process.env.GITHUB_CLIENT_SECRET!,
+        callbackURL: 'http://127.0.0.1:4000/auth/github/callback'
+      },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      async (_: string, __: string, profile: any, done: VerifyCallback) => {
+        const { name, email, id: githubId, login } = profile._json
+
+        const password = generate({
+          length: 15,
+          numbers: true,
+          lowercase: true,
+          uppercase: true,
+          symbols: true
+        })
+
+        let user: User
+        ;[user] = await User.find({
+          where: { email },
+          take: 1
+        })
+
+        const username = login + '-coderplex'
+
+        if (!user) {
+          user = await User.create({
+            name,
+            email,
+            githubId,
+            username,
+            password,
+            confirmed: true
+          })
+        }
+
+        user.githubId = githubId
+        user = await user.save()
+        return done(null, user)
+      }
+    )
+  )
+
+  app.get('/auth/github', passport.authenticate('github'))
+
+  app.get(
+    '/auth/github/callback',
+    passport.authenticate('github', {
+      failureRedirect: '/error',
+      session: false
+    }),
+    (req, res) => {
+      // Successful authentication, redirect to frontend.
+      const user: User = req.user as User
+      sendRefreshToken(res, createRefreshToken(user))
+      res.send({ accessToken: createAccessToken(user.id), user })
+    }
+  )
 
   app.post('/modify_user_roles', async (req, res) => {
     // TODO: Check if authorized, Right now we are just checking if user is authenticated
@@ -48,7 +114,6 @@ const main = async (): Promise<void> => {
     }
 
     const role: UserRole = req.body.role
-    console.log(role, role === UserRole.ADMIN)
     const type = req.body.type
 
     if (!role) {

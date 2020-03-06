@@ -9,11 +9,7 @@ import { IsUsernameAlreadyExist } from './IsUsernameAlreadyExist'
 export class RegisterInput extends PasswordInput {
   @Field()
   @Length(1, 255)
-  firstName: string
-
-  @Field()
-  @Length(1, 255)
-  lastName: string
+  name: string
 
   @Field()
   @IsEmail()
