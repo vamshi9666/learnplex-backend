@@ -7,7 +7,7 @@ import cors from 'cors'
 import passport from 'passport'
 import { verify } from 'jsonwebtoken'
 import { ApolloServer } from 'apollo-server-express'
-import { createConnection } from 'typeorm'
+import { createConnection, getConnection } from 'typeorm'
 import { separateOperations } from 'graphql'
 import {
   fieldExtensionsEstimator,
@@ -62,15 +62,17 @@ const main = async (): Promise<void> => {
           symbols: true
         })
 
-        let user: User
-        ;[user] = await User.find({
-          where: { email },
-          take: 1
-        })
-
         const username = login + '-coderplex'
 
+        let user = await getConnection()
+          .getRepository(User)
+          .createQueryBuilder('user')
+          .where('user.githubId = :id', { id: githubId })
+          .orWhere('user.email = :email', { email })
+          .getOne()
+
         if (!user) {
+          // user needs to be registered
           user = await User.create({
             name,
             email,
@@ -79,9 +81,14 @@ const main = async (): Promise<void> => {
             password,
             confirmed: true
           })
+        } else if (!user.githubId) {
+          // found user by email
+          // merge account
+          user.githubId = githubId
+        } else {
+          // user already exists
         }
 
-        user.githubId = githubId
         user = await user.save()
         return done(null, user)
       }
