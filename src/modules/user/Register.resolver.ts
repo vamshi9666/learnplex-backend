@@ -26,7 +26,7 @@ export class RegisterResolver {
       return false
     }
 
-    await sendEmail(email, await createConfirmationUrl(user.id))
+    sendEmail(email, await createConfirmationUrl(user.id))
 
     return true
   }

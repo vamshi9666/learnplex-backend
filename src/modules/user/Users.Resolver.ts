@@ -19,7 +19,6 @@ export class UsersResolver {
     return `your user id is ${payload!.userId}`
   }
 
-  @UseMiddleware(isAuthorized, hasRole([UserRole.ADMIN]))
   @Query(() => [User])
   users(): Promise<User[]> {
     return User.find()
