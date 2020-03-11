@@ -8,10 +8,14 @@ import { hasRole } from '../middleware/hasRole'
 
 @Resolver()
 export class UsersResolver {
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+  @Query(() => String)
+  hello() {
+    return 'Hello'
+  }
+
   @UseMiddleware(isAuthorized, hasRole([UserRole.USER]))
   @Query(() => String)
-  hello(@Ctx() { payload }: MyContext) {
+  bye(@Ctx() { payload }: MyContext) {
     return `your user id is ${payload!.userId}`
   }
 
