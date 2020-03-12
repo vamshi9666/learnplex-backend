@@ -3,13 +3,14 @@ import { Arg, Mutation, Resolver } from 'type-graphql'
 
 import { redis } from '../../redis'
 import { User } from '../../entity/User.entity'
-import { sendEmail } from '../utils/sendEmail'
+import { MailType, sendEmail } from '../utils/sendEmail'
 import { forgotPasswordPrefix } from '../constants/redisPrefixes'
 
 @Resolver()
 export class ForgotPasswordResolver {
   @Mutation(() => Boolean)
   async forgotPassword(@Arg('email') email: string): Promise<boolean> {
+    console.log('Forgot Password Resolver')
     const [user] = await User.find({ where: { email }, take: 1 })
 
     if (!user) {
@@ -19,9 +20,10 @@ export class ForgotPasswordResolver {
     const token = v4()
     await redis.set(forgotPasswordPrefix + token, user.id, 'ex', 60 * 60 * 24) // 1 day expiration
 
-    await sendEmail(
+    sendEmail(
       user.email,
-      `http://localhost:3000/user/change-password/${token}`
+      `http://localhost:3000/user/change-password/${token}`,
+      MailType.ForgotPasswordEmail
     )
 
     return true

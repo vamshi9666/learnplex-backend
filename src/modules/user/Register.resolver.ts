@@ -1,7 +1,7 @@
 import { Arg, Mutation, Resolver } from 'type-graphql'
 
 import { User } from '../../entity/User.entity'
-import { sendEmail } from '../utils/sendEmail'
+import { MailType, sendEmail } from '../utils/sendEmail'
 import { createConfirmationUrl } from '../utils/createConfirmationUrl'
 import { RegisterInput } from './Register/RegisterInput'
 
@@ -26,7 +26,11 @@ export class RegisterResolver {
       return false
     }
 
-    sendEmail(email, await createConfirmationUrl(user.id))
+    sendEmail(
+      email,
+      await createConfirmationUrl(user.id),
+      MailType.ConfirmationEmail
+    )
 
     return true
   }

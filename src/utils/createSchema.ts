@@ -10,6 +10,7 @@ import { RegisterResolver } from '../modules/user/Register.resolver'
 import { RevokeTokensForUserResolver } from '../modules/user/RevokeTokensForUserResolver'
 import { UsersResolver } from '../modules/user/Users.Resolver'
 import { GraphQLSchema } from 'graphql'
+import { SendConfirmationMailResolver } from '../modules/user/SendConfirmationMail.resolver'
 
 export const createSchema: () => Promise<GraphQLSchema> = () =>
   buildSchema({
@@ -22,7 +23,8 @@ export const createSchema: () => Promise<GraphQLSchema> = () =>
       MeResolver,
       RegisterResolver,
       RevokeTokensForUserResolver,
-      UsersResolver
+      UsersResolver,
+      SendConfirmationMailResolver
     ],
     authChecker: ({ context: { req } }) => {
       return !!req.userId
