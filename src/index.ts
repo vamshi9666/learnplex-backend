@@ -107,7 +107,12 @@ const main = async (): Promise<void> => {
       // Successful authentication, redirect to frontend.
       const user: User = req.user as User
       sendRefreshToken(res, createRefreshToken(user))
-      res.send({ accessToken: createAccessToken(user.id), user })
+      res.redirect(
+        `http://localhost:3000?accessToken=${createAccessToken(
+          user.id,
+          '7d'
+        )}&oauth=${true}`
+      )
     }
   )
 

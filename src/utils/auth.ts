@@ -9,9 +9,9 @@ export type JWTAuthPayload = {
   tokenVersion?: number
 }
 
-export const createAccessToken = (userId: number) => {
+export const createAccessToken = (userId: number, expiresIn = '15m') => {
   return sign({ userId }, process.env.ACCESS_TOKEN_SECRET!, {
-    expiresIn: '15m'
+    expiresIn: expiresIn
   })
 }
 
