@@ -3,7 +3,7 @@ import { Ctx, Query, Resolver, UseMiddleware } from 'type-graphql'
 import { MyContext } from '../../types/MyContext'
 import { User } from '../../entity/User.entity'
 import { isAuthorized } from '../middleware/isAuthorized'
-import { UserRole } from '../../entity/user/UserRole.enum'
+import { UserRole } from '../../entity/enums/UserRole.enum'
 import { hasRole } from '../middleware/hasRole'
 
 @Resolver()

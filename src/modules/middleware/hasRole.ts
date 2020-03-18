@@ -1,7 +1,7 @@
 import { MiddlewareFn } from 'type-graphql'
 
 import { MyContext } from '../../types/MyContext'
-import { UserRole } from '../../entity/user/UserRole.enum'
+import { UserRole } from '../../entity/enums/UserRole.enum'
 import { User } from '../../entity/User.entity'
 
 export const hasRole: (roles: UserRole[]) => MiddlewareFn<MyContext> = (

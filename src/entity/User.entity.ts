@@ -5,10 +5,12 @@ import {
   PrimaryGeneratedColumn,
   Column,
   BaseEntity,
-  BeforeInsert
+  BeforeInsert,
+  OneToMany
 } from 'typeorm'
 
-import { UserRole } from './user/UserRole.enum'
+import { UserRole } from './enums/UserRole.enum'
+import { Resource } from './Resource.entity'
 
 @ObjectType()
 @Entity('users')
@@ -51,6 +53,13 @@ export class User extends BaseEntity {
   @Field(() => Int, { nullable: true })
   @Column('int', { default: null })
   githubId: number
+
+  @Field(() => [Resource])
+  @OneToMany(
+    () => Resource,
+    (resource) => resource.user
+  )
+  resources: Resource[]
 
   @BeforeInsert()
   async hashPassword(): Promise<void> {

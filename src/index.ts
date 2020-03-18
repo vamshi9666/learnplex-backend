@@ -25,7 +25,7 @@ import {
   sendRefreshToken
 } from './utils/auth'
 import { User } from './entity/User.entity'
-import { UserRole } from './entity/user/UserRole.enum'
+import { UserRole } from './entity/enums/UserRole.enum'
 import { getAuthorizationPayloadFromToken } from './modules/middleware/isAuthorized'
 import { VerifyCallback } from 'passport-oauth2'
 
