@@ -6,7 +6,9 @@ import {
   PrimaryGeneratedColumn
 } from 'typeorm'
 import { Field, ID, ObjectType } from 'type-graphql'
+
 import { Resource } from './Resource.entity'
+import { slug } from '../utils/slug'
 
 @ObjectType()
 @Entity()
@@ -19,10 +21,15 @@ export class Topic extends BaseEntity {
   @Column()
   title: string
 
-  @Field(() => Resource)
+  @Field(() => [Resource])
   @OneToMany(
     () => Resource,
     (resource) => resource.topic
   )
-  resources: Resource[]
+  resources: Promise<Resource[]>
+
+  @Field()
+  slug(): string {
+    return slug(this.title)
+  }
 }

@@ -11,6 +11,13 @@ import { RevokeTokensForUserResolver } from '../modules/user/RevokeTokensForUser
 import { UsersResolver } from '../modules/user/Users.Resolver'
 import { GraphQLSchema } from 'graphql'
 import { SendConfirmationMailResolver } from '../modules/user/SendConfirmationMail.resolver'
+import { CreateTopicResolver } from '../modules/resource/CreateTopic.resolver'
+import { TopicsResolver } from '../modules/resource/Topics.resolver'
+import { CreateResourceResolver } from '../modules/resource/CreateResource.resolver'
+import { AddSectionResolver } from '../modules/resource/AddSection.resolver'
+import { ResourcesResolver } from '../modules/resource/Resources.resolver'
+import { SectionsResolver } from '../modules/resource/Sections.resolver'
+import { AddSubSectionResolver } from '../modules/resource/AddSubSection.resolver'
 
 export const createSchema: () => Promise<GraphQLSchema> = () =>
   buildSchema({
@@ -24,7 +31,14 @@ export const createSchema: () => Promise<GraphQLSchema> = () =>
       RegisterResolver,
       RevokeTokensForUserResolver,
       UsersResolver,
-      SendConfirmationMailResolver
+      SendConfirmationMailResolver,
+      CreateTopicResolver,
+      TopicsResolver,
+      CreateResourceResolver,
+      ResourcesResolver,
+      AddSectionResolver,
+      SectionsResolver,
+      AddSubSectionResolver
     ],
     authChecker: ({ context: { req } }) => {
       return !!req.userId

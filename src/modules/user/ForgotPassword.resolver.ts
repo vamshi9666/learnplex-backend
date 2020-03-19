@@ -10,7 +10,6 @@ import { forgotPasswordPrefix } from '../constants/redisPrefixes'
 export class ForgotPasswordResolver {
   @Mutation(() => Boolean)
   async forgotPassword(@Arg('email') email: string): Promise<boolean> {
-    console.log('Forgot Password Resolver')
     const [user] = await User.find({ where: { email }, take: 1 })
 
     if (!user) {

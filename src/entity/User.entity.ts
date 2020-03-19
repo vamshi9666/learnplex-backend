@@ -59,7 +59,7 @@ export class User extends BaseEntity {
     () => Resource,
     (resource) => resource.user
   )
-  resources: Resource[]
+  resources: Promise<Resource[]>
 
   @BeforeInsert()
   async hashPassword(): Promise<void> {

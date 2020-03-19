@@ -16,6 +16,7 @@ import {
 } from 'graphql-query-complexity'
 import { Strategy as GitHubStrategy } from 'passport-github2'
 import { generate } from 'generate-password'
+import { VerifyCallback } from 'passport-oauth2'
 
 import { createSchema } from './utils/createSchema'
 import {
@@ -27,7 +28,6 @@ import {
 import { User } from './entity/User.entity'
 import { UserRole } from './entity/enums/UserRole.enum'
 import { getAuthorizationPayloadFromToken } from './modules/middleware/isAuthorized'
-import { VerifyCallback } from 'passport-oauth2'
 
 const main = async (): Promise<void> => {
   const app = express()
@@ -230,7 +230,7 @@ const main = async (): Promise<void> => {
             })
             // Here we can react to the calculated complexity,
             // like compare it with max and throw error when the threshold is reached.
-            if (complexity >= 20) {
+            if (complexity >= 25) {
               throw new Error(
                 `Sorry, too complicated query! ${complexity} is over 20 that is the max allowed complexity.`
               )

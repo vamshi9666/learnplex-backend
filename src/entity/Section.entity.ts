@@ -12,6 +12,7 @@ import { Field, ID, ObjectType } from 'type-graphql'
 
 import { Resource } from './Resource.entity'
 import { Page } from './Page.entity'
+import { slug } from '../utils/slug'
 
 @ObjectType()
 @Entity()
@@ -24,35 +25,35 @@ export class Section extends BaseEntity {
   @Column()
   title: string
 
-  @Field(() => Resource)
+  @Field(() => Resource, { nullable: true })
   @ManyToOne(
     () => Resource,
     (resource) => resource.sections
   )
-  resource: Resource
+  resource: Promise<Resource>
 
   @Field(() => [Section])
   @OneToMany(
     () => Section,
     (section) => section.parentSection
   )
-  subSections: Section[]
+  subSections: Promise<Section[]>
 
   @Field(() => Section, { nullable: true })
   @ManyToOne(
     () => Section,
     (section) => section.subSections
   )
-  parentSection: Section
+  parentSection: Promise<Section>
 
   @Field(() => Page, { nullable: true })
   @OneToOne(() => Page)
   @JoinColumn()
-  page: Page
+  page: Promise<Page>
 
-  @Field()
-  isPage(): boolean {
-    return !!this.page
+  @Field(() => Boolean)
+  async isPage(): Promise<boolean> {
+    return !!(await this.page)
   }
 
   @Field()
@@ -63,5 +64,10 @@ export class Section extends BaseEntity {
   @Field()
   isRoot(): boolean {
     return !this.parentSection
+  }
+
+  @Field()
+  slug(): string {
+    return slug(this.title)
   }
 }
