@@ -10,6 +10,7 @@ import { Field, ID, ObjectType } from 'type-graphql'
 
 import { Section } from './Section.entity'
 import { User } from './User.entity'
+import { Topic } from './Topic.entity'
 
 @ObjectType()
 @Entity()
@@ -35,6 +36,10 @@ export class Resource extends BaseEntity {
     (user) => user.resources
   )
   user: User
+
+  @Field(() => Topic)
+  @ManyToOne(() => Topic, (topic) => topic.resources)
+  topic: Topic
 
   @Field()
   @Column('bool', { default: false })
