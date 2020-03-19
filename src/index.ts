@@ -1,6 +1,7 @@
 import 'dotenv/config'
 import 'reflect-metadata'
 import express from 'express'
+import compression from 'compression'
 import cookieParser from 'cookie-parser'
 import bodyParser from 'body-parser'
 import cors from 'cors'
@@ -39,6 +40,7 @@ const main = async (): Promise<void> => {
     })
   )
 
+  app.use(compression())
   app.use(cookieParser())
   app.use(bodyParser.json())
   app.use(passport.initialize())
@@ -193,6 +195,7 @@ const main = async (): Promise<void> => {
     schema,
     // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
     context: ({ req, res }) => ({ req, res }),
+    tracing: true,
     plugins: [
       {
         requestDidStart: () => ({
