@@ -19,7 +19,7 @@ export class AddSectionResolver {
     const section = new Section()
     section.title = title
     section.resource = Promise.resolve(resource)
-    section.subSections = Promise.resolve([])
+    section.sections = Promise.resolve([])
     return section.save()
   }
 }

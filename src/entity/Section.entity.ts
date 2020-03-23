@@ -37,12 +37,12 @@ export class Section extends BaseEntity {
     () => Section,
     (section) => section.parentSection
   )
-  subSections: Promise<Section[]>
+  sections: Promise<Section[]>
 
   @Field(() => Section, { nullable: true })
   @ManyToOne(
     () => Section,
-    (section) => section.subSections
+    (section) => section.sections
   )
   parentSection: Promise<Section>
 
@@ -53,7 +53,8 @@ export class Section extends BaseEntity {
 
   @Field(() => Boolean)
   async isPage(): Promise<boolean> {
-    return !!(await this.page)
+    const subSections = await this.sections
+    return !!(await this.page) || subSections.length == 0
   }
 
   @Field()

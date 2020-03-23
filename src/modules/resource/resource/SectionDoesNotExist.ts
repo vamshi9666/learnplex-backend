@@ -29,7 +29,7 @@ export class SectionDoesNotExistConstraint
         where: { id: sectionId },
         take: 1
       })
-      const subSections = (await section?.subSections) ?? []
+      const subSections = (await section?.sections) ?? []
       return !subSections.some(
         (subSection) => subSection.slug() === slug(title)
       )

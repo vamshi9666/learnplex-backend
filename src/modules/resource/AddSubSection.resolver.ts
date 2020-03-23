@@ -17,7 +17,7 @@ export class AddSubSectionResolver {
     })
     const subSection = new Section()
     subSection.title = title
-    subSection.subSections = Promise.resolve([])
+    subSection.sections = Promise.resolve([])
     subSection.parentSection = Promise.resolve(section)
     return subSection.save()
   }
