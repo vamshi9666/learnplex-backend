@@ -19,7 +19,7 @@ export class RegisterResolver {
         name,
         email,
         username,
-        password // hashing this in @BeforeInsert hook in User.entity.ts
+        password, // hashing this in @BeforeInsert hook in User.entity.ts
       }).save()
     } catch (e) {
       console.error(e)

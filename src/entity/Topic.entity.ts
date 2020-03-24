@@ -3,7 +3,7 @@ import {
   Column,
   Entity,
   OneToMany,
-  PrimaryGeneratedColumn
+  PrimaryGeneratedColumn,
 } from 'typeorm'
 import { Field, ID, ObjectType } from 'type-graphql'
 

@@ -6,9 +6,9 @@ import {
   ManyToOne,
   OneToMany,
   OneToOne,
-  PrimaryGeneratedColumn
+  PrimaryGeneratedColumn,
 } from 'typeorm'
-import { Field, ID, ObjectType } from 'type-graphql'
+import { Field, ID, Int, ObjectType } from 'type-graphql'
 
 import { Resource } from './Resource.entity'
 import { Page } from './Page.entity'
@@ -24,6 +24,10 @@ export class Section extends BaseEntity {
   @Field()
   @Column()
   title: string
+
+  @Field()
+  @Column('bool', { default: false })
+  deleted: boolean
 
   @Field(() => Resource, { nullable: true })
   @ManyToOne(
@@ -62,13 +66,34 @@ export class Section extends BaseEntity {
     return !this.isPage()
   }
 
-  @Field()
-  isRoot(): boolean {
-    return !this.parentSection
+  @Field(() => Boolean)
+  async isRoot(): Promise<boolean> {
+    const parentSection = await this.parentSection
+    return !parentSection
   }
 
   @Field()
   slug(): string {
     return slug(this.title)
+  }
+
+  @Field(() => Int)
+  async depth(): Promise<number> {
+    if (await this.isRoot()) {
+      return 0
+    }
+    const parent = await this.parentSection
+    const parentDepth = await parent.depth()
+    return parentDepth + 1
+  }
+
+  @Field(() => Boolean)
+  async isDeleted(): Promise<boolean> {
+    const parent = await this.parentSection
+    let parentDeleted = false
+    if (parent) {
+      parentDeleted = await parent.isDeleted()
+    }
+    return this.deleted || parentDeleted
   }
 }

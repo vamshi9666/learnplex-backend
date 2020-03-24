@@ -13,7 +13,7 @@ export class AddSectionInput {
   @Field()
   @Length(1, 255)
   @SectionDoesNotExist('resourceId', {
-    message: 'Section with this title already exists'
+    message: 'Section with this title already exists',
   })
   title: string
 }

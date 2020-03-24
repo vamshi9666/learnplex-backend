@@ -8,7 +8,7 @@ import { MyContext } from '../../types/MyContext'
 import {
   sendRefreshToken,
   createRefreshToken,
-  createAccessToken
+  createAccessToken,
 } from '../../utils/auth'
 import { ChangePasswordInput } from './changePassword/ChangePasswordInput'
 import { LoginResponse } from './login/LoginResponse'

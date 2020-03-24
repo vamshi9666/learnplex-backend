@@ -27,18 +27,18 @@ describe('Register', () => {
       name: faker.name.firstName(),
       email: faker.internet.email(),
       password: faker.internet.password(8),
-      username: faker.internet.userName()
+      username: faker.internet.userName(),
     }
     const response = await graphqlCall({
       source: registerMutation,
       variableValues: {
-        data: user
-      }
+        data: user,
+      },
     })
     expect(response).toMatchObject({
       data: {
-        register: true
-      }
+        register: true,
+      },
     })
 
     const [dbUser] = await User.find({ where: { email: user.email }, take: 1 })

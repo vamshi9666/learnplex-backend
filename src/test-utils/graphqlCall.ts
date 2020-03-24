@@ -15,7 +15,7 @@ let schema: GraphQLSchema
 export const graphqlCall: (_: Options) => void = async ({
   source,
   variableValues,
-  userId
+  userId,
 }: Options) => {
   if (!schema) {
     schema = await createSchema()
@@ -26,11 +26,11 @@ export const graphqlCall: (_: Options) => void = async ({
     variableValues,
     contextValue: {
       req: {
-        userId
+        userId,
       },
       res: {
-        clearCookie: jest.fn()
-      }
-    }
+        clearCookie: jest.fn(),
+      },
+    },
   })
 }

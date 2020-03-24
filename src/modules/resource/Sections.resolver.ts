@@ -9,13 +9,13 @@ export class SectionsResolver {
   async sections(@Arg('resourceId') resourceId: string): Promise<Section[]> {
     const [resource] = await Resource.find({
       where: { id: resourceId },
-      take: 1
+      take: 1,
     })
     if (!resource) {
       return []
     }
     return Section.find({
-      where: { resource }
+      where: { resource },
     })
   }
 }

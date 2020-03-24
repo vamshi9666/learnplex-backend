@@ -11,7 +11,7 @@ export const hasRole: (roles: UserRole[]) => MiddlewareFn<MyContext> = (
   try {
     ;[user] = await User.find({
       where: { id: context.payload!.userId },
-      take: 1
+      take: 1,
     })
   } catch (e) {
     console.error(e)

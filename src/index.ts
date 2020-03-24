@@ -13,7 +13,7 @@ import { separateOperations } from 'graphql'
 import {
   fieldExtensionsEstimator,
   getComplexity,
-  simpleEstimator
+  simpleEstimator,
 } from 'graphql-query-complexity'
 import { Strategy as GitHubStrategy } from 'passport-github2'
 import { generate } from 'generate-password'
@@ -24,7 +24,7 @@ import {
   createAccessToken,
   createRefreshToken,
   JWTAuthPayload,
-  sendRefreshToken
+  sendRefreshToken,
 } from './utils/auth'
 import { User } from './entity/User.entity'
 import { UserRole } from './entity/enums/UserRole.enum'
@@ -36,7 +36,7 @@ const main = async (): Promise<void> => {
   app.use(
     cors({
       credentials: true,
-      origin: 'http://localhost:3000'
+      origin: 'http://localhost:3000',
     })
   )
 
@@ -50,7 +50,7 @@ const main = async (): Promise<void> => {
       {
         clientID: process.env.GITHUB_CLIENT_ID!,
         clientSecret: process.env.GITHUB_CLIENT_SECRET!,
-        callbackURL: 'http://127.0.0.1:4000/auth/github/callback'
+        callbackURL: 'http://127.0.0.1:4000/auth/github/callback',
       },
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       async (_: string, __: string, profile: any, done: VerifyCallback) => {
@@ -61,7 +61,7 @@ const main = async (): Promise<void> => {
           numbers: true,
           lowercase: true,
           uppercase: true,
-          symbols: true
+          symbols: true,
         })
 
         const username = login + '-coderplex'
@@ -81,7 +81,7 @@ const main = async (): Promise<void> => {
             githubId,
             username,
             password,
-            confirmed: true
+            confirmed: true,
           })
         } else if (!user.githubId) {
           // found user by email
@@ -103,7 +103,7 @@ const main = async (): Promise<void> => {
     '/auth/github/callback',
     passport.authenticate('github', {
       failureRedirect: '/error',
-      session: false
+      session: false,
     }),
     (req, res) => {
       // Successful authentication, redirect to frontend.
@@ -228,12 +228,12 @@ const main = async (): Promise<void> => {
                 // Add more estimators here...
                 // This will assign each field a complexity of 1
                 // if no other estimator returned a value.
-                simpleEstimator({ defaultComplexity: 1 })
-              ]
+                simpleEstimator({ defaultComplexity: 1 }),
+              ],
             })
             // Here we can react to the calculated complexity,
             // like compare it with max and throw error when the threshold is reached.
-            if (complexity >= 30) {
+            if (complexity >= 40) {
               throw new Error(
                 `Sorry, too complicated query! ${complexity} is over 20 that is the max allowed complexity.`
               )
@@ -242,10 +242,10 @@ const main = async (): Promise<void> => {
             if (complexity > 0) {
               console.log('Used query complexity points:', complexity)
             }
-          }
-        })
-      }
-    ]
+          },
+        }),
+      },
+    ],
   })
   apolloServer.applyMiddleware({ app, cors: false })
 

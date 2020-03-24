@@ -11,7 +11,7 @@ export type JWTAuthPayload = {
 
 export const createAccessToken = (userId: number, expiresIn = '15m') => {
   return sign({ userId }, process.env.ACCESS_TOKEN_SECRET!, {
-    expiresIn: expiresIn
+    expiresIn: expiresIn,
   })
 }
 
@@ -26,6 +26,6 @@ export const createRefreshToken = (user: User) => {
 export const sendRefreshToken = (res: Response, refreshToken: string) => {
   res.cookie(process.env.REFRESH_COOKIE_NAME!, refreshToken, {
     maxAge: ms('7d'),
-    httpOnly: true
+    httpOnly: true,
   })
 }

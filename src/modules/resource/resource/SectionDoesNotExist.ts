@@ -3,7 +3,7 @@ import {
   ValidationArguments,
   ValidationOptions,
   ValidatorConstraint,
-  ValidatorConstraintInterface
+  ValidatorConstraintInterface,
 } from 'class-validator'
 
 import { slug } from '../../../utils/slug'
@@ -19,7 +19,7 @@ export class SectionDoesNotExistConstraint
       const resourceId = (args.object as any)[relatedPropertyName]
       const [resource] = await Resource.find({
         where: { id: resourceId },
-        take: 1
+        take: 1,
       })
       const sections = (await resource?.sections) ?? []
       return !sections.some((section) => section.slug() === slug(title))
@@ -27,7 +27,7 @@ export class SectionDoesNotExistConstraint
       const sectionId = (args.object as any)[relatedPropertyName]
       const [section] = await Section.find({
         where: { id: sectionId },
-        take: 1
+        take: 1,
       })
       const subSections = (await section?.sections) ?? []
       return !subSections.some(
@@ -48,7 +48,7 @@ export function SectionDoesNotExist(
       propertyName,
       options: validationOptions,
       constraints: [propoerty],
-      validator: SectionDoesNotExistConstraint
+      validator: SectionDoesNotExistConstraint,
     })
   }
 }

@@ -2,7 +2,7 @@ import {
   registerDecorator,
   ValidationOptions,
   ValidatorConstraint,
-  ValidatorConstraintInterface
+  ValidatorConstraintInterface,
 } from 'class-validator'
 
 import { Topic } from '../../../entity/Topic.entity'
@@ -25,7 +25,7 @@ export function TopicDoesNotExist(validationOptions?: ValidationOptions) {
       propertyName,
       options: validationOptions,
       constraints: [],
-      validator: TopicDoesNotExistConstraint
+      validator: TopicDoesNotExistConstraint,
     })
   }
 }

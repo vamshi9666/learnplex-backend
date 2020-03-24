@@ -5,7 +5,7 @@ import { User } from '../../entity/User.entity'
 import {
   sendRefreshToken,
   createRefreshToken,
-  createAccessToken
+  createAccessToken,
 } from '../../utils/auth'
 import { MyContext } from '../../types/MyContext'
 import { LoginResponse } from './login/LoginResponse'

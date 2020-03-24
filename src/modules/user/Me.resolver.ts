@@ -14,7 +14,7 @@ export class MeResolver {
     try {
       const [user] = await User.find({
         where: { id: payload!.userId },
-        take: 1
+        take: 1,
       })
       return user
     } catch (e) {

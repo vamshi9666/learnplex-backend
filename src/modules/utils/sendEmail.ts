@@ -2,7 +2,7 @@ import nodemailer from 'nodemailer'
 
 export enum MailType {
   ConfirmationEmail,
-  ForgotPasswordEmail
+  ForgotPasswordEmail,
 }
 
 export async function sendEmail(
@@ -19,8 +19,8 @@ export async function sendEmail(
       secure: true,
       auth: {
         user: process.env.EMAIL_ID,
-        pass: process.env.EMAIL_PASSWORD
-      }
+        pass: process.env.EMAIL_PASSWORD,
+      },
     })
   } else {
     const testAccount = await nodemailer.createTestAccount()
@@ -31,8 +31,8 @@ export async function sendEmail(
       secure: false, // true for 465, false for other ports
       auth: {
         user: testAccount.user, // generated ethereal user
-        pass: testAccount.pass // generated ethereal password
-      }
+        pass: testAccount.pass, // generated ethereal password
+      },
     })
   }
 
@@ -44,7 +44,7 @@ export async function sendEmail(
       to: email,
       subject: 'Verify your email - Coderplex',
       text: `${url}`,
-      html: `<a href="${url}">Verify Email</a>`
+      html: `<a href="${url}">Verify Email</a>`,
     })
   } else if (type === MailType.ForgotPasswordEmail) {
     info = await transporter.sendMail({
@@ -52,7 +52,7 @@ export async function sendEmail(
       to: email,
       subject: 'Change Password - Coderplex', // Subject line
       text: `${url}`,
-      html: `<a href="${url}">Change Password</a>`
+      html: `<a href="${url}">Change Password</a>`,
     })
   }
 

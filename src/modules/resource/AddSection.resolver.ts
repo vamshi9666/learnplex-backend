@@ -14,7 +14,7 @@ export class AddSectionResolver {
   ): Promise<Section> {
     const [resource] = await Resource.find({
       where: { id: resourceId },
-      take: 1
+      take: 1,
     })
     const section = new Section()
     section.title = title

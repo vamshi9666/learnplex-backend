@@ -2,7 +2,7 @@ import {
   registerDecorator,
   ValidationOptions,
   ValidatorConstraint,
-  ValidatorConstraintInterface
+  ValidatorConstraintInterface,
 } from 'class-validator'
 
 import { Topic } from '../../../entity/Topic.entity'
@@ -23,7 +23,7 @@ export function ValidTopicId(validationOptions?: ValidationOptions) {
       propertyName,
       options: validationOptions,
       constraints: [],
-      validator: ValidTopicIdConstraint
+      validator: ValidTopicIdConstraint,
     })
   }
 }

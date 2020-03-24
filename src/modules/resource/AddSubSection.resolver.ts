@@ -13,7 +13,7 @@ export class AddSubSectionResolver {
   ): Promise<Section> {
     const [section] = await Section.find({
       where: { id: sectionId },
-      take: 1
+      take: 1,
     })
     const subSection = new Section()
     subSection.title = title

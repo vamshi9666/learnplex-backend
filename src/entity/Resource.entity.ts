@@ -4,7 +4,7 @@ import {
   Entity,
   ManyToOne,
   OneToMany,
-  PrimaryGeneratedColumn
+  PrimaryGeneratedColumn,
 } from 'typeorm'
 import { Field, ID, ObjectType } from 'type-graphql'
 

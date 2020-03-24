@@ -14,6 +14,6 @@ export const testConnection: (_?: boolean) => Promise<Connection> = (
     database: 'boilerplate-test',
     synchronize: drop,
     dropSchema: drop,
-    entities: [path.join(__dirname, '/../entity/*.*')]
+    entities: [path.join(__dirname, '/../entity/*.*')],
   })
 }

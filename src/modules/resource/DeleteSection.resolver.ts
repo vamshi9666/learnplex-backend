@@ -1,0 +1,20 @@
+import { Arg, Mutation, Resolver, UseMiddleware } from 'type-graphql'
+
+import { isAuthorized } from '../middleware/isAuthorized'
+import { Section } from '../../entity/Section.entity'
+
+@Resolver()
+export class DeleteSectionResolver {
+  @Mutation(() => Boolean)
+  @UseMiddleware(isAuthorized)
+  async deleteSection(@Arg('sectionId') sectionId: string): Promise<boolean> {
+    const [section] = await Section.find({ where: { id: sectionId }, take: 1 })
+    if (!section) {
+      return false
+    }
+    section.deleted = true
+    section.title = section.title + '-deleted'
+    await section.save()
+    return true
+  }
+}

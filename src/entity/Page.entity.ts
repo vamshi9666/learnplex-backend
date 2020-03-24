@@ -18,7 +18,7 @@ export class Page extends BaseEntity {
   @Column({
     type: 'enum',
     enum: PageType,
-    default: PageType.TEXT
+    default: PageType.TEXT,
   })
   type: PageType
 }

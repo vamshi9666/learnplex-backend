@@ -2,7 +2,7 @@ import {
   registerDecorator,
   ValidationOptions,
   ValidatorConstraint,
-  ValidatorConstraintInterface
+  ValidatorConstraintInterface,
 } from 'class-validator'
 
 import { Section } from '../../../entity/Section.entity'
@@ -25,7 +25,7 @@ export function ValidSectionId(validationOptions?: ValidationOptions) {
       propertyName,
       options: validationOptions,
       constraints: [],
-      validator: ValidSectionIdConstraint
+      validator: ValidSectionIdConstraint,
     })
   }
 }

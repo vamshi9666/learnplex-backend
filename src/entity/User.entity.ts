@@ -6,7 +6,7 @@ import {
   Column,
   BaseEntity,
   BeforeInsert,
-  OneToMany
+  OneToMany,
 } from 'typeorm'
 
 import { UserRole } from './enums/UserRole.enum'
@@ -46,7 +46,7 @@ export class User extends BaseEntity {
     type: 'enum',
     enum: UserRole,
     array: true,
-    default: [UserRole.USER]
+    default: [UserRole.USER],
   })
   roles: UserRole[]
 

@@ -2,7 +2,7 @@ import {
   registerDecorator,
   ValidationOptions,
   ValidatorConstraint,
-  ValidatorConstraintInterface
+  ValidatorConstraintInterface,
 } from 'class-validator'
 
 import { Resource } from '../../../entity/Resource.entity'
@@ -25,7 +25,7 @@ export function ValidResourceId(validationOptions?: ValidationOptions) {
       propertyName,
       options: validationOptions,
       constraints: [],
-      validator: ValidResourceIdConstraint
+      validator: ValidResourceIdConstraint,
     })
   }
 }

@@ -2,7 +2,7 @@ import {
   registerDecorator,
   ValidationOptions,
   ValidatorConstraint,
-  ValidatorConstraintInterface
+  ValidatorConstraintInterface,
 } from 'class-validator'
 
 import { User } from '../../../entity/User.entity'
@@ -25,7 +25,7 @@ export function IsUsernameAlreadyExist(validationOptions?: ValidationOptions) {
       propertyName,
       options: validationOptions,
       constraints: [],
-      validator: IsUsernameAlreadyExistConstraint
+      validator: IsUsernameAlreadyExistConstraint,
     })
   }
 }

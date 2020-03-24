@@ -2,7 +2,7 @@ import {
   registerDecorator,
   ValidationOptions,
   ValidatorConstraint,
-  ValidatorConstraintInterface
+  ValidatorConstraintInterface,
 } from 'class-validator'
 
 import { slug } from '../../../utils/slug'
@@ -25,7 +25,7 @@ export function ResourceDoesNotExist(validationOptions?: ValidationOptions) {
       propertyName,
       options: validationOptions,
       constraints: [],
-      validator: ResourceDoesNotExistConstraint
+      validator: ResourceDoesNotExistConstraint,
     })
   }
 }
