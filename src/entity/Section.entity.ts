@@ -30,7 +30,7 @@ export class Section extends BaseEntity {
   @Column('bool', { default: false })
   deleted: boolean
 
-  @Field()
+  @Field(() => Int)
   @Column('int', { default: 0 })
   order: number
 
