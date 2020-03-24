@@ -35,9 +35,9 @@ export class Section extends BaseEntity {
   order: number
 
   @Field(() => Resource, { nullable: true })
-  @ManyToOne(
+  @OneToOne(
     () => Resource,
-    (resource) => resource.sections
+    (resource) => resource.baseSection
   )
   resource: Promise<Resource>
 
@@ -54,6 +54,10 @@ export class Section extends BaseEntity {
     (section) => section.sections
   )
   parentSection: Promise<Section>
+
+  @Field(() => Section, { nullable: true })
+  @ManyToOne(() => Section)
+  baseSection: Promise<Section>
 
   @Field(() => Page, { nullable: true })
   @OneToOne(() => Page)
@@ -72,9 +76,18 @@ export class Section extends BaseEntity {
   }
 
   @Field(() => Boolean)
+  async isBaseSection(): Promise<boolean> {
+    return !(await this.parentSection)
+  }
+
+  @Field(() => Boolean)
   async isRoot(): Promise<boolean> {
     const parentSection = await this.parentSection
-    return !parentSection
+    const baseSection = await this.baseSection
+    if (!parentSection || !baseSection) {
+      return false
+    }
+    return parentSection.id === baseSection.id
   }
 
   @Field()
@@ -104,9 +117,11 @@ export class Section extends BaseEntity {
 
   @BeforeInsert()
   async setOrder(): Promise<void> {
-    if (await this.isRoot()) {
-      const resource = await this.resource
-      this.order = (await resource.sections).length
+    if (await this.isBaseSection()) {
+      this.order = -1
+    } else if (await this.isRoot()) {
+      const baseSection = await this.baseSection
+      this.order = (await baseSection.sections).length
     } else {
       const parent = await this.parentSection
       this.order = (await parent.sections).length

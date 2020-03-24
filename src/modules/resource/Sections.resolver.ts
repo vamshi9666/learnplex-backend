@@ -14,8 +14,25 @@ export class SectionsResolver {
     if (!resource) {
       return []
     }
-    return Section.find({
-      where: { resource },
-    })
+    const baseSection = await resource.baseSection
+    return baseSection.sections
+  }
+
+  @Query(() => [Section])
+  async sectionsList(
+    @Arg('resourceSlug') resourceSlug: string
+  ): Promise<Section[]> {
+    console.log(resourceSlug)
+    const resources = await Resource.find()
+    const [resource] = resources.filter(
+      (resource) => resource.slug() === resourceSlug
+    )
+
+    console.log(resource)
+    if (!resource) {
+      return []
+    }
+    const baseSection = await resource.baseSection
+    return await Section.find({ where: { baseSection } })
   }
 }

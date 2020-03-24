@@ -17,7 +17,6 @@ import { CreateResourceResolver } from '../modules/resource/CreateResource.resol
 import { AddSectionResolver } from '../modules/resource/AddSection.resolver'
 import { ResourcesResolver } from '../modules/resource/Resources.resolver'
 import { SectionsResolver } from '../modules/resource/Sections.resolver'
-import { AddSubSectionResolver } from '../modules/resource/AddSubSection.resolver'
 import { UpdateSectionResolver } from '../modules/resource/UpdateSection.resolver'
 import { DeleteSectionResolver } from '../modules/resource/DeleteSection.resolver'
 
@@ -40,7 +39,6 @@ export const createSchema: () => Promise<GraphQLSchema> = () =>
       ResourcesResolver,
       AddSectionResolver,
       SectionsResolver,
-      AddSubSectionResolver,
       UpdateSectionResolver,
       DeleteSectionResolver,
     ],

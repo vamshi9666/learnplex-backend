@@ -1,18 +1,18 @@
 import { Field, InputType } from 'type-graphql'
 import { Length } from 'class-validator'
 
-import { ValidResourceId } from './ValidResourceId'
 import { SectionDoesNotExist } from './SectionDoesNotExist'
+import { ValidSectionId } from './ValidSectionId'
 
 @InputType({ isAbstract: true })
 export class AddSectionInput {
   @Field()
-  @ValidResourceId({ message: 'Invalid resource' })
-  resourceId: string
+  @ValidSectionId({ message: 'Invalid resource' })
+  parentSectionId: string
 
   @Field()
   @Length(1, 255)
-  @SectionDoesNotExist('resourceId', {
+  @SectionDoesNotExist('parentSectionId', {
     message: 'Section with this title already exists',
   })
   title: string

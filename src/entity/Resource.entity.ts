@@ -2,8 +2,9 @@ import {
   BaseEntity,
   Column,
   Entity,
+  JoinColumn,
   ManyToOne,
-  OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm'
 import { Field, ID, ObjectType } from 'type-graphql'
@@ -24,12 +25,13 @@ export class Resource extends BaseEntity {
   @Column()
   title: string
 
-  @Field(() => [Section])
-  @OneToMany(
+  @Field(() => Section)
+  @OneToOne(
     () => Section,
     (section) => section.resource
   )
-  sections: Promise<Section[]>
+  @JoinColumn()
+  baseSection: Promise<Section>
 
   @Field(() => User)
   @ManyToOne(
