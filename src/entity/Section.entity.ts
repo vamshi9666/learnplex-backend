@@ -1,5 +1,6 @@
 import {
   BaseEntity,
+  BeforeInsert,
   Column,
   Entity,
   JoinColumn,
@@ -28,6 +29,10 @@ export class Section extends BaseEntity {
   @Field()
   @Column('bool', { default: false })
   deleted: boolean
+
+  @Field()
+  @Column('int', { default: 0 })
+  order: number
 
   @Field(() => Resource, { nullable: true })
   @ManyToOne(
@@ -95,5 +100,16 @@ export class Section extends BaseEntity {
       parentDeleted = await parent.isDeleted()
     }
     return this.deleted || parentDeleted
+  }
+
+  @BeforeInsert()
+  async setOrder(): Promise<void> {
+    if (await this.isRoot()) {
+      const resource = await this.resource
+      this.order = (await resource.sections).length
+    } else {
+      const parent = await this.parentSection
+      this.order = (await parent.sections).length
+    }
   }
 }
