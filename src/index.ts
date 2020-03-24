@@ -191,6 +191,7 @@ const main = async (): Promise<void> => {
   await createConnection()
 
   const schema = await createSchema()
+  const MAX_COMPLEXITY = 45
   const apolloServer = new ApolloServer({
     schema,
     // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
@@ -233,9 +234,9 @@ const main = async (): Promise<void> => {
             })
             // Here we can react to the calculated complexity,
             // like compare it with max and throw error when the threshold is reached.
-            if (complexity >= 40) {
+            if (complexity >= MAX_COMPLEXITY) {
               throw new Error(
-                `Sorry, too complicated query! ${complexity} is over 20 that is the max allowed complexity.`
+                `Sorry, too complicated query! ${complexity} is over ${MAX_COMPLEXITY} that is the max allowed complexity.`
               )
             }
             // And here we can e.g. subtract the complexity point from hourly API calls limit.
