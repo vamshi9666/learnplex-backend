@@ -23,7 +23,7 @@ export class CreateResourceResolver {
     const savedBaseSection = await baseSection.save()
 
     const resources = await currentUser.resources
-    if (resources.some((resource) => resource.slug() == slug(title))) {
+    if (resources.some((resource) => resource.slug == slug(title))) {
       throw new Error('Resource with this title already exists')
     }
     const [topic] = await Topic.find({ where: { id: topicId }, take: 1 })

@@ -23,7 +23,7 @@ export class ResourcesResolver {
     const userResources = await user.resources
     console.log(userResources)
     const [resource] = userResources.filter(
-      (resource: Resource) => resource.slug() == slug
+      (resource: Resource) => resource.slug == slug
     )
     console.log(resource)
     return resource

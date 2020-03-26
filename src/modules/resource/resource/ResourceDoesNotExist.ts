@@ -13,7 +13,7 @@ export class ResourceDoesNotExistConstraint
   implements ValidatorConstraintInterface {
   async validate(title: string): Promise<boolean> {
     return Resource.find().then((resources: Resource[]) => {
-      return !resources.some((resource) => resource.slug() === slug(title))
+      return !resources.some((resource) => resource.slug === slug(title))
     })
   }
 }

@@ -33,7 +33,7 @@ export class SectionDoesNotExistConstraint
       })
       subSections = await parentSection.sections
     }
-    return !subSections?.some((subSection) => subSection.slug() === slug(title))
+    return !subSections?.some((subSection) => subSection.slug === slug(title))
   }
 }
 

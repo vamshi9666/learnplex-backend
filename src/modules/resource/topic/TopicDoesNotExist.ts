@@ -13,7 +13,7 @@ export class TopicDoesNotExistConstraint
   implements ValidatorConstraintInterface {
   validate(title: string): Promise<boolean> {
     return Topic.find().then((topics: Topic[]) => {
-      return !topics.some((topic) => topic.slug() === slug(title))
+      return !topics.some((topic) => topic.slug === slug(title))
     })
   }
 }

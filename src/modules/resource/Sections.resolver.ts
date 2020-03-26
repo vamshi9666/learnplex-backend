@@ -25,7 +25,7 @@ export class SectionsResolver {
     console.log(resourceSlug)
     const resources = await Resource.find()
     const [resource] = resources.filter(
-      (resource) => resource.slug() === resourceSlug
+      (resource) => resource.slug === resourceSlug
     )
 
     console.log(resource)

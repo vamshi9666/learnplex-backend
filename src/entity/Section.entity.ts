@@ -1,6 +1,7 @@
 import {
   BaseEntity,
   BeforeInsert,
+  BeforeUpdate,
   Column,
   Entity,
   JoinColumn,
@@ -25,6 +26,10 @@ export class Section extends BaseEntity {
   @Field()
   @Column()
   title: string
+
+  @Field()
+  @Column()
+  slug: string
 
   @Field()
   @Column('bool', { default: false })
@@ -90,11 +95,6 @@ export class Section extends BaseEntity {
     return parentSection.id === baseSection.id
   }
 
-  @Field()
-  slug(): string {
-    return slug(this.title)
-  }
-
   @Field(() => Int)
   async depth(): Promise<number> {
     if (await this.isRoot()) {
@@ -126,5 +126,11 @@ export class Section extends BaseEntity {
       const parent = await this.parentSection
       this.order = (await parent.sections).length
     }
+  }
+
+  @BeforeInsert()
+  @BeforeUpdate()
+  setSlug(): void {
+    this.slug = slug(this.title)
   }
 }

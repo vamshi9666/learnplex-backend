@@ -1,5 +1,7 @@
 import {
   BaseEntity,
+  BeforeInsert,
+  BeforeUpdate,
   Column,
   Entity,
   OneToMany,
@@ -21,6 +23,10 @@ export class Topic extends BaseEntity {
   @Column()
   title: string
 
+  @Field()
+  @Column()
+  slug: string
+
   @Field(() => [Resource])
   @OneToMany(
     () => Resource,
@@ -28,8 +34,9 @@ export class Topic extends BaseEntity {
   )
   resources: Promise<Resource[]>
 
-  @Field()
-  slug(): string {
-    return slug(this.title)
+  @BeforeInsert()
+  @BeforeUpdate()
+  setSlug(): void {
+    this.slug = slug(this.title)
   }
 }

@@ -1,5 +1,7 @@
 import {
   BaseEntity,
+  BeforeInsert,
+  BeforeUpdate,
   Column,
   Entity,
   JoinColumn,
@@ -24,6 +26,10 @@ export class Resource extends BaseEntity {
   @Field()
   @Column()
   title: string
+
+  @Field()
+  @Column()
+  slug: string
 
   @Field(() => Section)
   @OneToOne(
@@ -51,8 +57,9 @@ export class Resource extends BaseEntity {
   @Column('bool', { default: false })
   verified: boolean
 
-  @Field()
-  slug(): string {
-    return slug(this.title)
+  @BeforeInsert()
+  @BeforeUpdate()
+  setSlug(): void {
+    this.slug = slug(this.title)
   }
 }
