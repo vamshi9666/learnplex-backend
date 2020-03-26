@@ -97,6 +97,9 @@ export class Section extends BaseEntity {
 
   @Field(() => Int)
   async depth(): Promise<number> {
+    if (await this.isBaseSection()) {
+      return -1
+    }
     if (await this.isRoot()) {
       return 0
     }
@@ -113,6 +116,22 @@ export class Section extends BaseEntity {
       parentDeleted = await parent.isDeleted()
     }
     return this.deleted || parentDeleted
+  }
+
+  @Field(() => [Section])
+  async filteredSections(): Promise<Section[]> {
+    const sections = await this.sections
+    return sections
+      .filter((section) => !section.deleted)
+      .sort((section, anotherSection) => {
+        if (section.order > anotherSection.order) {
+          return 1
+        }
+        if (section.order < anotherSection.order) {
+          return -1
+        }
+        return 0
+      })
   }
 
   @BeforeInsert()
@@ -132,5 +151,13 @@ export class Section extends BaseEntity {
   @BeforeUpdate()
   setSlug(): void {
     this.slug = slug(this.title)
+  }
+
+  @BeforeUpdate()
+  async setDeletedIfParentIsDeleted(): Promise<void> {
+    const parent = await this.parentSection
+    if (parent && parent.isDeleted()) {
+      this.deleted = true
+    }
   }
 }

@@ -4,6 +4,8 @@ import { Resource } from '../../entity/Resource.entity'
 import { isAuthorized } from '../middleware/isAuthorized'
 import CurrentUser from '../../decorators/currentUser'
 import { User } from '../../entity/User.entity'
+import { Section } from '../../entity/Section.entity'
+import { getResource } from '../utils/getResourceFromUsernameAndSlug'
 
 @Resolver()
 export class ResourcesResolver {
@@ -15,17 +17,18 @@ export class ResourcesResolver {
 
   @Query(() => Resource, { nullable: true })
   async resource(@Arg('username') username: string, @Arg('slug') slug: string) {
-    const [user] = await User.find({ where: { username }, take: 1 })
-    console.log(user)
-    if (!user) {
+    return getResource(username, slug)
+  }
+
+  @Query(() => Section)
+  async baseSection(
+    @Arg('username') username: string,
+    @Arg('resourceSlug') slug: string
+  ) {
+    const resource = await getResource(username, slug)
+    if (!resource) {
       return null
     }
-    const userResources = await user.resources
-    console.log(userResources)
-    const [resource] = userResources.filter(
-      (resource: Resource) => resource.slug == slug
-    )
-    console.log(resource)
-    return resource
+    return resource.baseSection
   }
 }

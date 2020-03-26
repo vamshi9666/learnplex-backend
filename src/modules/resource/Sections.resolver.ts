@@ -2,6 +2,7 @@ import { Arg, Query, Resolver } from 'type-graphql'
 
 import { Section } from '../../entity/Section.entity'
 import { Resource } from '../../entity/Resource.entity'
+import { getResource } from '../utils/getResourceFromUsernameAndSlug'
 
 @Resolver()
 export class SectionsResolver {
@@ -20,19 +21,18 @@ export class SectionsResolver {
 
   @Query(() => [Section])
   async sectionsList(
+    @Arg('username') username: string,
     @Arg('resourceSlug') resourceSlug: string
   ): Promise<Section[]> {
-    console.log(resourceSlug)
-    const resources = await Resource.find()
-    const [resource] = resources.filter(
-      (resource) => resource.slug === resourceSlug
-    )
-
-    console.log(resource)
+    const resource = await getResource(username, resourceSlug)
     if (!resource) {
       return []
     }
     const baseSection = await resource.baseSection
-    return await Section.find({ where: { baseSection } })
+    const sectionsListData = [baseSection]
+    sectionsListData.push(
+      ...(await Section.find({ where: { baseSection, deleted: false } }))
+    )
+    return sectionsListData
   }
 }
