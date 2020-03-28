@@ -19,6 +19,7 @@ import { ResourcesResolver } from '../modules/resource/Resources.resolver'
 import { SectionsResolver } from '../modules/resource/Sections.resolver'
 import { UpdateSectionResolver } from '../modules/resource/UpdateSection.resolver'
 import { DeleteSectionResolver } from '../modules/resource/DeleteSection.resolver'
+import { ReorderSectionsResolver } from '../modules/resource/ReorderSections.resolver'
 
 export const createSchema: () => Promise<GraphQLSchema> = () =>
   buildSchema({
@@ -41,6 +42,7 @@ export const createSchema: () => Promise<GraphQLSchema> = () =>
       SectionsResolver,
       UpdateSectionResolver,
       DeleteSectionResolver,
+      ReorderSectionsResolver,
     ],
     authChecker: ({ context: { req } }) => {
       return !!req.userId
