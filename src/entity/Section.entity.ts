@@ -72,7 +72,7 @@ export class Section extends BaseEntity {
   @Field(() => Boolean)
   async isPage(): Promise<boolean> {
     const subSections = await this.sections
-    return !!(await this.page) || subSections.length == 0
+    return subSections.length == 0
   }
 
   @Field()
@@ -151,13 +151,5 @@ export class Section extends BaseEntity {
   @BeforeUpdate()
   setSlug(): void {
     this.slug = slug(this.title)
-  }
-
-  @BeforeUpdate()
-  async setDeletedIfParentIsDeleted(): Promise<void> {
-    const parent = await this.parentSection
-    if (parent && parent.isDeleted()) {
-      this.deleted = true
-    }
   }
 }

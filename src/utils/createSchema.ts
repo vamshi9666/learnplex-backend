@@ -20,6 +20,7 @@ import { SectionsResolver } from '../modules/resource/Sections.resolver'
 import { UpdateSectionResolver } from '../modules/resource/UpdateSection.resolver'
 import { DeleteSectionResolver } from '../modules/resource/DeleteSection.resolver'
 import { ReorderSectionsResolver } from '../modules/resource/ReorderSections.resolver'
+import { SavePageResolver } from '../modules/resource/SavePage.resolver'
 
 export const createSchema: () => Promise<GraphQLSchema> = () =>
   buildSchema({
@@ -43,6 +44,7 @@ export const createSchema: () => Promise<GraphQLSchema> = () =>
       UpdateSectionResolver,
       DeleteSectionResolver,
       ReorderSectionsResolver,
+      SavePageResolver,
     ],
     authChecker: ({ context: { req } }) => {
       return !!req.userId
