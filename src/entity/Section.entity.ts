@@ -35,6 +35,10 @@ export class Section extends BaseEntity {
   @Column('bool', { default: false })
   deleted: boolean
 
+  @Field()
+  @Column('bool', { default: false })
+  isFork: boolean
+
   @Field(() => Int)
   @Column('int', { default: 0 })
   order: number
@@ -136,6 +140,9 @@ export class Section extends BaseEntity {
 
   @BeforeInsert()
   async setOrder(): Promise<void> {
+    if (this.isFork) {
+      return
+    }
     if (await this.isBaseSection()) {
       this.order = -1
     } else if (await this.isRoot()) {

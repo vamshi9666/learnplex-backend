@@ -6,6 +6,7 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm'
@@ -30,6 +31,24 @@ export class Resource extends BaseEntity {
   @Field()
   @Column()
   slug: string
+
+  @Field()
+  @Column('bool', { default: false })
+  isFork: boolean
+
+  @Field(() => User)
+  @ManyToOne(
+    () => Resource,
+    (resource) => resource.forks
+  )
+  forkedFrom: Promise<Resource>
+
+  @Field(() => [Resource])
+  @OneToMany(
+    () => Resource,
+    (resource) => resource.forkedFrom
+  )
+  forks: Promise<Resource[]>
 
   @Field(() => Section)
   @OneToOne(

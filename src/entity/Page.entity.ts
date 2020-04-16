@@ -21,4 +21,8 @@ export class Page extends BaseEntity {
     default: PageType.TEXT,
   })
   type: PageType
+
+  @Field()
+  @Column('bool', { default: false })
+  isFork: boolean
 }
