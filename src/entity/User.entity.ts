@@ -11,6 +11,7 @@ import {
 
 import { UserRole } from './enums/UserRole.enum'
 import { Resource } from './Resource.entity'
+import { Progress } from './Progress.entity'
 
 @ObjectType()
 @Entity('users')
@@ -60,6 +61,13 @@ export class User extends BaseEntity {
     (resource) => resource.user
   )
   resources: Promise<Resource[]>
+
+  @Field(() => [Progress])
+  @OneToMany(
+    () => Progress,
+    (progress) => progress.user
+  )
+  progressList: Promise<Progress[]>
 
   @BeforeInsert()
   async hashPassword(): Promise<void> {
