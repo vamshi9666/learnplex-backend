@@ -9,6 +9,7 @@ import {
   sendRefreshToken,
   createRefreshToken,
   createAccessToken,
+  sendAccessToken,
 } from '../../utils/auth'
 import { ChangePasswordInput } from './changePassword/ChangePasswordInput'
 import { LoginResponse } from './login/LoginResponse'
@@ -38,6 +39,7 @@ export class ChangePasswordResolver {
     await user.save()
 
     sendRefreshToken(ctx.res, createRefreshToken(user))
+    sendAccessToken(ctx.res, createAccessToken(user.id))
 
     return { accessToken: createAccessToken(user.id), user }
   }

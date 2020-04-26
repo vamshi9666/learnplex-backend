@@ -1,13 +1,13 @@
 import { Ctx, Mutation, Resolver } from 'type-graphql'
 
 import { MyContext } from '../../types/MyContext'
-import { sendRefreshToken } from '../../utils/auth'
 
 @Resolver()
 export class LogoutResolver {
   @Mutation(() => Boolean)
   async logout(@Ctx() { res }: MyContext): Promise<boolean> {
-    await sendRefreshToken(res, '')
+    res.clearCookie(process.env.REFRESH_COOKIE_NAME as string)
+    res.clearCookie(process.env.ACCESS_COOKIE_NAME as string)
     return true
   }
 }

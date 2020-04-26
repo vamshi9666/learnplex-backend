@@ -29,3 +29,10 @@ export const sendRefreshToken = (res: Response, refreshToken: string) => {
     httpOnly: true,
   })
 }
+
+export const sendAccessToken = (res: Response, accessToken: string) => {
+  res.cookie(process.env.ACCESS_COOKIE_NAME!, accessToken, {
+    maxAge: ms('15m'),
+    httpOnly: true,
+  })
+}

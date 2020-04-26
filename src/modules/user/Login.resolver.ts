@@ -6,6 +6,7 @@ import {
   sendRefreshToken,
   createRefreshToken,
   createAccessToken,
+  sendAccessToken,
 } from '../../utils/auth'
 import { MyContext } from '../../types/MyContext'
 import { LoginResponse } from './login/LoginResponse'
@@ -35,6 +36,7 @@ export class LoginResolver {
     }
 
     sendRefreshToken(res, createRefreshToken(user))
+    sendAccessToken(res, createAccessToken(user.id))
     return { accessToken: createAccessToken(user.id), user }
   }
 }

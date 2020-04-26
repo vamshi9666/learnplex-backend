@@ -24,6 +24,7 @@ import {
   createAccessToken,
   createRefreshToken,
   JWTAuthPayload,
+  sendAccessToken,
   sendRefreshToken,
 } from './utils/auth'
 import { User } from './entity/User.entity'
@@ -111,9 +112,8 @@ const main = async (): Promise<void> => {
       sendRefreshToken(res, createRefreshToken(user))
       res.redirect(
         `http://localhost:3000?accessToken=${createAccessToken(
-          user.id,
-          '7d'
-        )}&oauth=${true}`
+          user.id
+        )}&refreshToken=${createRefreshToken(user)}&oauth=${true}`
       )
     }
   )
@@ -184,6 +184,7 @@ const main = async (): Promise<void> => {
     }
 
     sendRefreshToken(res, createRefreshToken(user))
+    sendAccessToken(res, createAccessToken(user.id))
 
     return res.send({ ok: true, accessToken: createAccessToken(user.id) })
   })
