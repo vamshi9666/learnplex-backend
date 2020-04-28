@@ -74,6 +74,7 @@ export class ForkResourceResolver {
       forkedSubSection.isFork = true
       forkedSubSection.parentSection = Promise.resolve(forkedParentSection)
       forkedSubSection.baseSection = Promise.resolve(forkedBaseSection)
+      forkedSubSection.deleted = subSection.deleted
       await forkedSubSection.save()
       await this.forkSubSections(
         subSection,
