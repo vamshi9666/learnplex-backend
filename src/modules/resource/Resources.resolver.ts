@@ -29,6 +29,11 @@ export class ResourcesResolver {
     if (!resource) {
       return null
     }
-    return resource.baseSection
+    const baseSection = await resource.baseSection
+    const sections = await baseSection.sections
+    baseSection.sections = Promise.resolve(
+      sections.filter((section) => !section.deleted)
+    )
+    return baseSection
   }
 }

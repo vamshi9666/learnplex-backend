@@ -33,6 +33,12 @@ export class SectionsResolver {
     sectionsListData.push(
       ...(await Section.find({ where: { baseSection, deleted: false } }))
     )
+    for (const section of sectionsListData) {
+      const sections = await section.sections
+      section.sections = Promise.resolve(
+        sections.filter((section) => !section.deleted)
+      )
+    }
     return sectionsListData
   }
 }
