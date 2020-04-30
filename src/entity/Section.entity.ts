@@ -75,8 +75,14 @@ export class Section extends BaseEntity {
 
   @Field(() => Boolean)
   async isPage(): Promise<boolean> {
+    const page = await this.page
+    return !!page
+  }
+
+  @Field(() => Boolean)
+  async hasSubSections(): Promise<boolean> {
     const subSections = await this.sections
-    return subSections.length == 0
+    return subSections.length > 0
   }
 
   @Field()
