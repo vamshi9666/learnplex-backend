@@ -16,7 +16,10 @@ export class ResourcesResolver {
   }
 
   @Query(() => Resource, { nullable: true })
-  async resource(@Arg('username') username: string, @Arg('slug') slug: string) {
+  async resource(
+    @Arg('username') username: string,
+    @Arg('resourceSlug') slug: string
+  ) {
     return getResource(username, slug)
   }
 

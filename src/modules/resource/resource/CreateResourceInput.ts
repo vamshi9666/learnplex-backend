@@ -12,4 +12,7 @@ export class CreateResourceInput {
   @Field()
   @ValidTopicId({ message: 'Invalid topic' })
   topicId: string
+
+  @Field()
+  description: string
 }

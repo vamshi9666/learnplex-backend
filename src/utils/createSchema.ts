@@ -24,6 +24,7 @@ import { SavePageResolver } from '../modules/resource/SavePage.resolver'
 import { ForkResourceResolver } from '../modules/resource/ForkResource.resolver'
 import { CompleteSectionResolver } from '../modules/resource/CompleteSection.resolver'
 import { UserProgressResolver } from '../modules/resource/UserProgress.resolver'
+import { UpdateResourceResolver } from '../modules/resource/UpdateResource.resolver'
 
 export const createSchema: () => Promise<GraphQLSchema> = () =>
   buildSchema({
@@ -51,6 +52,7 @@ export const createSchema: () => Promise<GraphQLSchema> = () =>
       ForkResourceResolver,
       CompleteSectionResolver,
       UserProgressResolver,
+      UpdateResourceResolver,
     ],
     authChecker: ({ context: { req } }) => {
       return !!req.userId

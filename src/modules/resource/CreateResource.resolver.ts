@@ -14,7 +14,7 @@ export class CreateResourceResolver {
   @Mutation(() => Resource)
   @UseMiddleware(isAuthorized)
   async createResource(
-    @Arg('data') { title, topicId }: CreateResourceInput,
+    @Arg('data') { title, topicId, description }: CreateResourceInput,
     @CurrentUser() currentUser: User
   ): Promise<Resource> {
     const baseSection = new Section()
@@ -32,6 +32,7 @@ export class CreateResourceResolver {
     resource.baseSection = Promise.resolve(savedBaseSection)
     resource.topic = Promise.resolve(topic)
     resource.user = Promise.resolve(currentUser)
+    resource.description = description
     return resource.save()
   }
 }

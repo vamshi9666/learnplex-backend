@@ -76,6 +76,10 @@ export class Resource extends BaseEntity {
   @Column('bool', { default: false })
   verified: boolean
 
+  @Field({ nullable: true })
+  @Column({ nullable: true })
+  description: string
+
   @BeforeInsert()
   @BeforeUpdate()
   setSlug(): void {
