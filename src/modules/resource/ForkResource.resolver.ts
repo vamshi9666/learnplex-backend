@@ -36,6 +36,8 @@ export class ForkResourceResolver {
     forkedResource.topic = resource.topic
     forkedResource.isFork = true
     forkedResource.forkedFrom = Promise.resolve(resource)
+    forkedResource.description = resource.description
+    forkedResource.forkedVersion = resource.version
     await this.forkBaseSection(resource, forkedResource)
     return forkedResource
   }
@@ -47,6 +49,7 @@ export class ForkResourceResolver {
     forkedBaseSection.title = baseSection.title
     forkedBaseSection.sections = Promise.resolve([])
     forkedBaseSection.isFork = true
+    forkedBaseSection.forkedVersion = baseSection.version
     await forkedBaseSection.save()
 
     // Save the forked resource
@@ -75,6 +78,7 @@ export class ForkResourceResolver {
       forkedSubSection.parentSection = Promise.resolve(forkedParentSection)
       forkedSubSection.baseSection = Promise.resolve(forkedBaseSection)
       forkedSubSection.deleted = subSection.deleted
+      forkedSubSection.forkedVersion = subSection.version
       await forkedSubSection.save()
       await this.forkSubSections(
         subSection,

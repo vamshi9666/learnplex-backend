@@ -3,12 +3,15 @@ import {
   BeforeInsert,
   BeforeUpdate,
   Column,
+  CreateDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
+  VersionColumn,
 } from 'typeorm'
 import { Field, ID, Int, ObjectType } from 'type-graphql'
 
@@ -72,6 +75,22 @@ export class Section extends BaseEntity {
   @OneToOne(() => Page)
   @JoinColumn()
   page: Promise<Page>
+
+  @Field()
+  @CreateDateColumn()
+  createdDate: Date
+
+  @Field()
+  @UpdateDateColumn()
+  updatedDate: Date
+
+  @Field(() => Int)
+  @VersionColumn()
+  version: number
+
+  @Field(() => Int, { nullable: true })
+  @Column('int', { default: 0 })
+  forkedVersion: number
 
   @Field(() => Boolean)
   async isPage(): Promise<boolean> {

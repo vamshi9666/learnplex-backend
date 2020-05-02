@@ -3,14 +3,18 @@ import {
   BeforeInsert,
   BeforeUpdate,
   Column,
+  CreateDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
+  Unique,
+  UpdateDateColumn,
+  VersionColumn,
 } from 'typeorm'
-import { Field, ID, ObjectType } from 'type-graphql'
+import { Field, ID, Int, ObjectType } from 'type-graphql'
 
 import { Section } from './Section.entity'
 import { User } from './User.entity'
@@ -19,6 +23,7 @@ import { slug } from '../utils/slug'
 
 @ObjectType()
 @Entity()
+@Unique(['slug', 'userId'])
 export class Resource extends BaseEntity {
   @Field(() => ID)
   @PrimaryGeneratedColumn('uuid')
@@ -42,6 +47,10 @@ export class Resource extends BaseEntity {
     (resource) => resource.forks
   )
   forkedFrom: Promise<Resource>
+
+  @Field(() => Int, { nullable: true })
+  @Column('int', { default: 0 })
+  forkedVersion: number
 
   @Field(() => [Resource])
   @OneToMany(
@@ -79,6 +88,22 @@ export class Resource extends BaseEntity {
   @Field({ nullable: true })
   @Column({ nullable: true })
   description: string
+
+  @Field(() => Int)
+  @Column({ readonly: true })
+  userId: number
+
+  @Field()
+  @CreateDateColumn()
+  createdDate: Date
+
+  @Field()
+  @UpdateDateColumn()
+  updatedDate: Date
+
+  @Field(() => Int)
+  @VersionColumn()
+  version: number
 
   @BeforeInsert()
   @BeforeUpdate()
