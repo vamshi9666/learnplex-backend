@@ -33,6 +33,14 @@ export class CompleteSectionResolver {
       return progress.save()
     }
     const completedSections = await progress.completedSections
+    if (
+      completedSections.some(
+        (currentSection) => currentSection.id === section.id
+      )
+    ) {
+      return progress
+    }
+
     progress.completedSections = Promise.resolve([
       ...completedSections,
       section,
