@@ -37,10 +37,7 @@ const main = async (): Promise<void> => {
   app.use(
     cors({
       credentials: true,
-      origin:
-        process.env.NODE_ENV === 'production'
-          ? 'https://coderplex.in/'
-          : 'http://localhost:3000',
+      origin: process.env.ORIGIN_ENDPOINT ?? 'http://localhost:3000',
     })
   )
 
