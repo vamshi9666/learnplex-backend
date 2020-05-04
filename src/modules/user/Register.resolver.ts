@@ -3,7 +3,7 @@ import { Arg, Mutation, Resolver } from 'type-graphql'
 import { User } from '../../entity/User.entity'
 import { MailType, sendEmail } from '../utils/sendEmail'
 import { createConfirmationUrl } from '../utils/createConfirmationUrl'
-import { RegisterInput } from './Register/RegisterInput'
+import { RegisterInput } from './register/RegisterInput'
 
 @Resolver()
 export class RegisterResolver {
