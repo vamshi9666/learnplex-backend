@@ -30,6 +30,7 @@ import {
 import { User } from './entity/User.entity'
 import { UserRole } from './entity/enums/UserRole.enum'
 import { getAuthorizationPayloadFromToken } from './modules/middleware/isAuthorized'
+import { getOriginEndPoint } from './utils/getOriginEndpoint'
 
 const main = async (): Promise<void> => {
   const app = express()
@@ -37,7 +38,7 @@ const main = async (): Promise<void> => {
   app.use(
     cors({
       credentials: true,
-      origin: process.env.ORIGIN_ENDPOINT ?? 'http://localhost:3000',
+      origin: getOriginEndPoint(),
     })
   )
 
@@ -98,6 +99,8 @@ const main = async (): Promise<void> => {
     )
   )
 
+  app.get('/', (_, res) => res.send('Hello World!'))
+
   app.get('/auth/github', passport.authenticate('github'))
 
   app.get(
@@ -111,7 +114,7 @@ const main = async (): Promise<void> => {
       const user: User = req.user as User
       sendRefreshToken(res, createRefreshToken(user))
       res.redirect(
-        `http://localhost:3000?accessToken=${createAccessToken(
+        `${getOriginEndPoint()}?accessToken=${createAccessToken(
           user.id
         )}&refreshToken=${createRefreshToken(user)}&oauth=${true}`
       )
@@ -251,8 +254,11 @@ const main = async (): Promise<void> => {
   })
   apolloServer.applyMiddleware({ app, cors: false })
 
-  app.listen(4000, () => {
-    console.log('server started at http://localhost:4000/graphql')
+  const PORT = process.env.PORT || 4080
+  const HOST = process.env.HOST || '0.0.0.0'
+
+  app.listen(PORT, () => {
+    console.log(`server started at ${HOST}:${PORT}/graphql`)
   })
 }
 

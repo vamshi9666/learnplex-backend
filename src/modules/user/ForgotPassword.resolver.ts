@@ -5,6 +5,7 @@ import { redis } from '../../redis'
 import { User } from '../../entity/User.entity'
 import { MailType, sendEmail } from '../utils/sendEmail'
 import { forgotPasswordPrefix } from '../constants/redisPrefixes'
+import { getOriginEndPoint } from '../../utils/getOriginEndpoint'
 
 @Resolver()
 export class ForgotPasswordResolver {
@@ -21,7 +22,7 @@ export class ForgotPasswordResolver {
 
     sendEmail(
       user.email,
-      `http://localhost:3000/user/change-password/${token}`,
+      `${getOriginEndPoint()}/user/change-password/${token}`,
       MailType.ForgotPasswordEmail
     )
 
