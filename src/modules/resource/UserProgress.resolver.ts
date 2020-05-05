@@ -12,9 +12,10 @@ export class UserProgressResolver {
   @UseMiddleware(isAuthorized)
   async userProgress(
     @Arg('resourceSlug') resourceSlug: string,
+    @Arg('ownerUsername') ownerUsername: string,
     @CurrentUser() currentUser: User
   ): Promise<Progress | null> {
-    const resource = await getResource(currentUser.username, resourceSlug)
+    const resource = await getResource(ownerUsername, resourceSlug)
     if (!resource) {
       return null
     }
