@@ -6,6 +6,8 @@ import CurrentUser from '../../decorators/currentUser'
 import { User } from '../../entity/User.entity'
 import { Section } from '../../entity/Section.entity'
 import { getResource } from '../utils/getResourceFromUsernameAndSlug'
+import { hasRole } from '../middleware/hasRole'
+import { UserRole } from '../../entity/enums/UserRole.enum'
 
 @Resolver()
 export class ResourcesResolver {
@@ -21,6 +23,12 @@ export class ResourcesResolver {
     @Arg('resourceSlug') slug: string
   ) {
     return getResource(username, slug)
+  }
+
+  @UseMiddleware(isAuthorized, hasRole([UserRole.ADMIN]))
+  @Query(() => [Resource])
+  async allResources(): Promise<Resource[]> {
+    return Resource.find()
   }
 
   @Query(() => Section)
