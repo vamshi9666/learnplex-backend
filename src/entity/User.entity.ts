@@ -28,7 +28,7 @@ export class User extends BaseEntity {
   @Column('int', { default: 0 })
   tokenVersion: number
 
-  @Field()
+  @Field({ nullable: true })
   @Index({ unique: true, where: 'email IS NOT NULL' })
   @Column('text', { nullable: true })
   email: string
