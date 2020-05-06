@@ -1,4 +1,11 @@
-import { Ctx, Query, Resolver, UseMiddleware } from 'type-graphql'
+import {
+  Arg,
+  Ctx,
+  Mutation,
+  Query,
+  Resolver,
+  UseMiddleware,
+} from 'type-graphql'
 
 import { User } from '../../entity/User.entity'
 import { isAuthorized } from '../middleware/isAuthorized'
@@ -20,7 +27,20 @@ export class UsersResolver {
   }
 
   @Query(() => [User])
+  @UseMiddleware(isAuthorized, hasRole([UserRole.ADMIN]))
   users(): Promise<User[]> {
     return User.find()
+  }
+
+  @Mutation(() => Boolean)
+  async validateEmail(@Arg('email') email: string): Promise<boolean> {
+    const [user] = await User.find({ where: { email } })
+    return !user
+  }
+
+  @Mutation(() => Boolean)
+  async validateUsername(@Arg('username') username: string): Promise<boolean> {
+    const [user] = await User.find({ where: { username } })
+    return !user
   }
 }
