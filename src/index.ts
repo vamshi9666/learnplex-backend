@@ -29,7 +29,6 @@ import {
 } from './utils/auth'
 import { User } from './entity/User.entity'
 import { UserRole } from './entity/enums/UserRole.enum'
-import { getAuthorizationPayloadFromToken } from './modules/middleware/isAuthorized'
 import { getOriginEndPoint } from './utils/getOriginEndpoint'
 
 const main = async (): Promise<void> => {
@@ -124,33 +123,37 @@ const main = async (): Promise<void> => {
 
   app.post('/modify_user_roles', async (req, res) => {
     // TODO: Check if authorized, Right now we are just checking if user is authenticated
-    try {
-      getAuthorizationPayloadFromToken({ req, res })
-    } catch (e) {
-      console.log(e)
-      return res.send({ ok: false, message: 'Not authorized' })
+    const tokenPayload = req.headers.authorization
+    if (!tokenPayload) {
+      return res.send({ ok: false, message: 'access forbidden' })
     }
-
+    const token = tokenPayload.split(' ')[1]
+    if (!token) {
+      return res.send({ ok: false, message: 'access forbidden' })
+    }
+    if (token !== process.env.SECRET_PASSWORD) {
+      return res.send({ ok: false, message: 'access forbidden' })
+    }
     const role: UserRole = req.body.role
     const type = req.body.type
 
     if (!role) {
-      res.send({ ok: false, message: 'invalid role' })
+      return res.send({ ok: false, message: 'invalid role' })
     }
     if (type !== 'ADD' && type !== 'REMOVE') {
-      res.send({ ok: false, message: 'invalid operation' })
+      return res.send({ ok: false, message: 'invalid operation' })
     }
     const [user] = await User.find({ where: { id: req.body.userId }, take: 1 })
 
     if (!user) {
-      res.send({ ok: false, message: 'invalid userId' })
+      return res.send({ ok: false, message: 'invalid userId' })
     }
 
     if (type === 'ADD' && !user.roles.includes(role)) {
-      user.roles.push(role)
+      return user.roles.push(role)
     }
     if (type === 'REMOVE' && user.roles.includes(role)) {
-      user.roles.splice(user.roles.indexOf(role), 1)
+      return user.roles.splice(user.roles.indexOf(role), 1)
     }
     await user.save()
     return res.send({ ok: true, message: 'Modified user roles' })
