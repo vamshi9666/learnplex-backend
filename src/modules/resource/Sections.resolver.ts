@@ -26,7 +26,7 @@ export class SectionsResolver {
   ): Promise<Section[]> {
     const resource = await getResource(username, resourceSlug)
     if (!resource) {
-      return []
+      throw new Error('Resource not found')
     }
     const baseSection = await resource.baseSection
     const sectionsListData = [baseSection]
