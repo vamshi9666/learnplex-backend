@@ -154,10 +154,9 @@ const main = async (): Promise<void> => {
     }
 
     if (type === 'ADD' && !user.roles.includes(role)) {
-      return user.roles.push(role)
-    }
-    if (type === 'REMOVE' && user.roles.includes(role)) {
-      return user.roles.splice(user.roles.indexOf(role), 1)
+      user.roles.push(role)
+    } else if (type === 'REMOVE' && user.roles.includes(role)) {
+      user.roles.splice(user.roles.indexOf(role), 1)
     }
     await user.save()
     return res.send({ ok: true, message: 'Modified user roles' })
