@@ -52,7 +52,7 @@ const main = async (): Promise<void> => {
         clientID: process.env.GITHUB_CLIENT_ID!,
         clientSecret: process.env.GITHUB_CLIENT_SECRET!,
         callbackURL: `${process.env.CURRENT_ENDPOint ??
-          'http://127.0.0.1:4000'}/auth/github/callback`,
+          'http://localhost:4000'}/auth/github/callback`,
       },
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       async (_: string, __: string, profile: any, done: VerifyCallback) => {
@@ -66,7 +66,11 @@ const main = async (): Promise<void> => {
           symbols: true,
         })
 
-        const username = login + '-coderplex'
+        const [userExists] = await User.find({ where: { username: login } })
+        let username = login
+        if (userExists) {
+          username = login + '-coderplex'
+        }
 
         let user = await getConnection()
           .getRepository(User)
@@ -75,7 +79,7 @@ const main = async (): Promise<void> => {
           .orWhere('user.email = :email', { email })
           .getOne()
 
-        if (!user) {
+        if (!email || !user) {
           // user needs to be registered
           user = await User.create({
             name,

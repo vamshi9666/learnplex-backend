@@ -7,6 +7,7 @@ import {
   BaseEntity,
   BeforeInsert,
   OneToMany,
+  Index,
 } from 'typeorm'
 
 import { UserRole } from './enums/UserRole.enum'
@@ -28,7 +29,8 @@ export class User extends BaseEntity {
   tokenVersion: number
 
   @Field()
-  @Column('text', { unique: true })
+  @Index({ unique: true, where: 'email IS NOT NULL' })
+  @Column('text', { nullable: true })
   email: string
 
   @Field()
