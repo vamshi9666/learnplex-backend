@@ -17,18 +17,19 @@ export class ForkResourceResolver {
     { username, resourceSlug }: ForkResourceInput,
     @CurrentUser() currentUser: User
   ): Promise<Resource | null> {
-    if (currentUser.username === username) {
-      return null
-    }
     const resource = await getResource(username, resourceSlug)
-    const [forkExists] = await Resource.find({
-      where: { forkedFrom: resource, user: currentUser },
-    })
-    if (forkExists) {
-      return null
-    }
     if (!resource) {
-      return null
+      throw new Error('Invalid Resource')
+    }
+    if (currentUser.username === username) {
+      return resource
+    }
+    const [forkExists] = await Resource.find({
+      where: { forkedFrom: resource, userId: currentUser.id },
+    })
+    console.log({ forkExists })
+    if (forkExists) {
+      return forkExists
     }
     const forkedResource = new Resource()
     forkedResource.title = resource.title
