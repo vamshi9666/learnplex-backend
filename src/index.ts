@@ -69,7 +69,7 @@ const main = async (): Promise<void> => {
         const [userExists] = await User.find({ where: { username: login } })
         let username = login
         if (userExists) {
-          username = login + '-coderplex'
+          username = login + '-github'
         }
 
         let user = await getConnection()

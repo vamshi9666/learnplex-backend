@@ -26,6 +26,7 @@ import { CompleteSectionResolver } from '../modules/resource/CompleteSection.res
 import { UserProgressResolver } from '../modules/resource/UserProgress.resolver'
 import { UpdateResourceResolver } from '../modules/resource/UpdateResource.resolver'
 import { SearchResourceResolver } from '../modules/resource/SearchResource.resolver'
+import { UpdateUserResolver } from '../modules/user/UpdateUser.resolver'
 
 export const createSchema: () => Promise<GraphQLSchema> = () =>
   buildSchema({
@@ -55,6 +56,7 @@ export const createSchema: () => Promise<GraphQLSchema> = () =>
       UserProgressResolver,
       UpdateResourceResolver,
       SearchResourceResolver,
+      UpdateUserResolver,
     ],
     authChecker: ({ context: { req } }) => {
       return !!req.userId
