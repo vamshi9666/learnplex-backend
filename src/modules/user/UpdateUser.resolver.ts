@@ -1,5 +1,5 @@
 import { Arg, Mutation, UseMiddleware } from 'type-graphql'
-import { hash } from 'bcryptjs'
+import { compare, hash } from 'bcryptjs'
 
 import { isAuthorized } from '../middleware/isAuthorized'
 import { UpdateUserInput } from './register/UpdateUserInput'
@@ -7,7 +7,7 @@ import CurrentUser from '../../decorators/currentUser'
 import { User } from '../../entity/User.entity'
 import { MailType, sendEmail } from '../utils/sendEmail'
 import { createConfirmationUrl } from '../utils/createConfirmationUrl'
-import { PasswordInput } from '../shared/PasswordInput'
+import { UpdatePasswordInput } from './register/UpdatePasswordInput'
 
 export class UpdateUserResolver {
   @Mutation(() => Boolean)
@@ -51,9 +51,12 @@ export class UpdateUserResolver {
   @Mutation(() => Boolean)
   @UseMiddleware(isAuthorized)
   async updatePassword(
-    @Arg('data') { password }: PasswordInput,
+    @Arg('data') { password, currentPassword }: UpdatePasswordInput,
     @CurrentUser() currentUser: User
   ) {
+    if (!(await compare(currentPassword, currentUser.password))) {
+      return false
+    }
     currentUser.password = await hash(password, 12)
     await currentUser.save()
     return true

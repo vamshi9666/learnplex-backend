@@ -6,8 +6,7 @@ import CurrentUser from '../../decorators/currentUser'
 import { User } from '../../entity/User.entity'
 import { Section } from '../../entity/Section.entity'
 import { getResource } from '../utils/getResourceFromUsernameAndSlug'
-import { hasRole } from '../middleware/hasRole'
-import { UserRole } from '../../entity/enums/UserRole.enum'
+import { Topic } from '../../entity/Topic.entity'
 
 @Resolver()
 export class ResourcesResolver {
@@ -15,6 +14,24 @@ export class ResourcesResolver {
   @Query(() => [Resource])
   async resources(@CurrentUser() currentUser: User): Promise<Resource[]> {
     return currentUser.resources
+  }
+
+  @Query(() => [Resource])
+  async resourcesByUsername(@Arg('username') username: string) {
+    const [user] = await User.find({ where: { username } })
+    if (!user) {
+      throw new Error('Invalid username')
+    }
+    return user.resources
+  }
+
+  @Query(() => [Resource])
+  async resourcesByTopic(@Arg('slug') slug: string) {
+    const [topic] = await Topic.find({ where: { slug } })
+    if (!topic) {
+      throw new Error('Invalid topic')
+    }
+    return topic.resources
   }
 
   @Query(() => Resource, { nullable: true })
@@ -25,10 +42,14 @@ export class ResourcesResolver {
     return getResource(username, slug)
   }
 
-  @UseMiddleware(isAuthorized, hasRole([UserRole.ADMIN]))
   @Query(() => [Resource])
   async allResources(): Promise<Resource[]> {
     return Resource.find()
+  }
+
+  @Query(() => [Resource])
+  async allVerifiedResources(): Promise<Resource[]> {
+    return Resource.find({ where: { verified: true } })
   }
 
   @Query(() => Section)
