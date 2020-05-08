@@ -8,6 +8,7 @@ import { Resource } from '../../entity/Resource.entity'
 import { Section } from '../../entity/Section.entity'
 import { Page } from '../../entity/Page.entity'
 import { ForkResourceInput } from './resource/ForkResourceInput'
+import { slug } from '../../utils/slug'
 
 export class ForkResourceResolver {
   @Mutation(() => Resource, { nullable: true })
@@ -31,8 +32,15 @@ export class ForkResourceResolver {
     if (forkExists) {
       return forkExists
     }
+    let title = resource.title
+    const [resourceWithSameSlug] = await Resource.find({
+      where: { userId: currentUser.id, slug: slug(title) },
+    })
+    if (resourceWithSameSlug) {
+      title = title + '(forked)'
+    }
     const forkedResource = new Resource()
-    forkedResource.title = resource.title
+    forkedResource.title = title
     forkedResource.user = Promise.resolve(currentUser)
     forkedResource.topic = resource.topic
     forkedResource.isFork = true
