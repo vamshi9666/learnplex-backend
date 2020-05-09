@@ -110,4 +110,35 @@ export class Resource extends BaseEntity {
   setSlug(): void {
     this.slug = slug(this.title)
   }
+
+  async slugsForFirstPage(section: Section): Promise<string[]> {
+    const subSections = await section.sections
+    if (subSections.length === 0) {
+      if (await section.isBaseSection()) {
+        return []
+      }
+      return [section.slug]
+    }
+    const dummySection = new Section()
+    dummySection.order = 1000000000
+    const sectionWithLeastOrder = subSections
+      .filter((a) => !a.deleted)
+      .reduce((a: Section, b) => {
+        return a.order < b.order ? a : b
+      })
+    const otherSlugs = await this.slugsForFirstPage(sectionWithLeastOrder)
+    if (await section.isBaseSection()) {
+      return otherSlugs
+    }
+    return [section.slug, ...otherSlugs]
+  }
+
+  @Field(() => String)
+  async firstPageSlugsPath(): Promise<string> {
+    const slugs = await this.slugsForFirstPage(await this.baseSection)
+    if (slugs.length === 0) {
+      return ''
+    }
+    return slugs.reduce((a, b) => `${a}/${b}`)
+  }
 }
