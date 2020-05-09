@@ -16,4 +16,7 @@ export class AddSectionInput {
     message: 'Section with this title already exists',
   })
   title: string
+
+  @Field({ nullable: true })
+  content: string
 }
