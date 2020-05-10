@@ -6,9 +6,34 @@ import CurrentUser from '../../decorators/currentUser'
 import { User } from '../../entity/User.entity'
 import { Progress } from '../../entity/Progress.entity'
 import { Section } from '../../entity/Section.entity'
+import { Resource } from '../../entity/Resource.entity'
 
 @Resolver()
 export class CompleteSectionResolver {
+  @Mutation(() => Progress)
+  @UseMiddleware(isAuthorized)
+  async startProgress(
+    @Arg('resourceId') resourceId: string,
+    @CurrentUser() currentUser: User
+  ): Promise<Progress> {
+    const [resource] = await Resource.find({ where: { id: resourceId } })
+    if (!resource) {
+      throw new Error('Invalid Resource')
+    }
+    const [progressExists] = await Progress.find({
+      where: { user: currentUser, resource },
+    })
+    if (progressExists) {
+      return progressExists
+    }
+
+    const progress = new Progress()
+    progress.user = Promise.resolve(currentUser)
+    progress.resource = Promise.resolve(resource)
+    progress.completedSections = Promise.resolve([])
+    return progress.save()
+  }
+
   @Mutation(() => Progress, { nullable: true })
   @UseMiddleware(isAuthorized)
   async completeSection(

@@ -24,4 +24,29 @@ export class UserProgressResolver {
     })
     return progress
   }
+
+  @Query(() => [Progress])
+  @UseMiddleware(isAuthorized)
+  async userProgressList(
+    @CurrentUser() currentUser: User
+  ): Promise<Progress[]> {
+    return Progress.find({ where: { user: currentUser } })
+  }
+
+  @Query(() => Boolean)
+  @UseMiddleware(isAuthorized)
+  async hasEnrolled(
+    @Arg('username') username: string,
+    @Arg('resourceSlug') resourceSlug: string,
+    @CurrentUser() currentUser: User
+  ): Promise<boolean> {
+    const resource = await getResource(username, resourceSlug)
+    if (!resource) {
+      throw new Error('Invalid Resource')
+    }
+    const [progress] = await Progress.find({
+      where: { resource, user: currentUser },
+    })
+    return !!progress
+  }
 }
