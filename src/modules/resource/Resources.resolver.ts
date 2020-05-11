@@ -1,4 +1,4 @@
-import { Arg, Query, Resolver, UseMiddleware } from 'type-graphql'
+import { Arg, Mutation, Query, Resolver, UseMiddleware } from 'type-graphql'
 
 import { Resource } from '../../entity/Resource.entity'
 import { isAuthorized } from '../middleware/isAuthorized'
@@ -7,6 +7,8 @@ import { User } from '../../entity/User.entity'
 import { Section } from '../../entity/Section.entity'
 import { getResource } from '../utils/getResourceFromUsernameAndSlug'
 import { Topic } from '../../entity/Topic.entity'
+import { hasRole } from '../middleware/hasRole'
+import { UserRole } from '../../entity/enums/UserRole.enum'
 
 @Resolver()
 export class ResourcesResolver {
@@ -14,6 +16,19 @@ export class ResourcesResolver {
   @Query(() => [Resource])
   async resources(@CurrentUser() currentUser: User): Promise<Resource[]> {
     return currentUser.resources
+  }
+
+  @Query(() => Resource)
+  async primaryResourceBySlug(
+    @Arg('resourceSlug') resourceSlug: string
+  ): Promise<Resource> {
+    const [resource] = await Resource.find({
+      where: { slug: resourceSlug, verified: true },
+    })
+    if (!resource) {
+      throw new Error('Resource not found')
+    }
+    return resource
   }
 
   @Query(() => [Resource])
@@ -67,5 +82,16 @@ export class ResourcesResolver {
       sections.filter((section) => !section.deleted)
     )
     return baseSection
+  }
+
+  @UseMiddleware(isAuthorized, hasRole([UserRole.ADMIN]))
+  @Mutation(() => Resource)
+  async makePrimary(@Arg('resourceId') resourceId: string): Promise<Resource> {
+    const [resource] = await Resource.find({ where: { id: resourceId } })
+    if (!resource) {
+      throw new Error('Resource Not found')
+    }
+    resource.verified = true
+    return resource.save()
   }
 }
