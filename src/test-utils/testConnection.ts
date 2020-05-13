@@ -10,7 +10,7 @@ export const testConnection: (_?: boolean) => Promise<Connection> = (
     host: 'localhost',
     port: 5432,
     username: 'postgres',
-    password: '',
+    password: 'dbpwdpsql',
     database: 'boilerplate-test',
     synchronize: drop,
     dropSchema: drop,
