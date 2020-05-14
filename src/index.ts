@@ -208,7 +208,7 @@ const main = async (): Promise<void> => {
     schema,
     // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
     context: ({ req, res }) => ({ req, res }),
-    tracing: true,
+    tracing: false,
     plugins: [
       {
         requestDidStart: () => ({
