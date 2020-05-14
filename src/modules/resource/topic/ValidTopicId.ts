@@ -17,7 +17,7 @@ export class ValidTopicIdConstraint implements ValidatorConstraintInterface {
 }
 
 export function ValidTopicId(validationOptions?: ValidationOptions) {
-  return function(object: Record<string, any>, propertyName: string): void {
+  return function (object: Record<string, any>, propertyName: string): void {
     registerDecorator({
       target: object.constructor,
       propertyName,

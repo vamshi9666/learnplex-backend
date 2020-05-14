@@ -58,17 +58,11 @@ export class User extends BaseEntity {
   githubId: number
 
   @Field(() => [Resource])
-  @OneToMany(
-    () => Resource,
-    (resource) => resource.user
-  )
+  @OneToMany(() => Resource, (resource) => resource.user)
   resources: Promise<Resource[]>
 
   @Field(() => [Progress])
-  @OneToMany(
-    () => Progress,
-    (progress) => progress.user
-  )
+  @OneToMany(() => Progress, (progress) => progress.user)
   progressList: Promise<Progress[]>
 
   @BeforeInsert()

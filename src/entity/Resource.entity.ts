@@ -42,10 +42,7 @@ export class Resource extends BaseEntity {
   isFork: boolean
 
   @Field(() => User)
-  @ManyToOne(
-    () => Resource,
-    (resource) => resource.forks
-  )
+  @ManyToOne(() => Resource, (resource) => resource.forks)
   forkedFrom: Promise<Resource>
 
   @Field(() => Int, { nullable: true })
@@ -53,32 +50,20 @@ export class Resource extends BaseEntity {
   forkedVersion: number
 
   @Field(() => [Resource])
-  @OneToMany(
-    () => Resource,
-    (resource) => resource.forkedFrom
-  )
+  @OneToMany(() => Resource, (resource) => resource.forkedFrom)
   forks: Promise<Resource[]>
 
   @Field(() => Section)
-  @OneToOne(
-    () => Section,
-    (section) => section.resource
-  )
+  @OneToOne(() => Section, (section) => section.resource)
   @JoinColumn()
   baseSection: Promise<Section>
 
   @Field(() => User)
-  @ManyToOne(
-    () => User,
-    (user) => user.resources
-  )
+  @ManyToOne(() => User, (user) => user.resources)
   user: Promise<User>
 
   @Field(() => Topic)
-  @ManyToOne(
-    () => Topic,
-    (topic) => topic.resources
-  )
+  @ManyToOne(() => Topic, (topic) => topic.resources)
   topic: Promise<Topic>
 
   @Field()

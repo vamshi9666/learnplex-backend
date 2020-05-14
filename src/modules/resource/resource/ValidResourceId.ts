@@ -19,7 +19,7 @@ export class ValidResourceIdConstraint implements ValidatorConstraintInterface {
 }
 
 export function ValidResourceId(validationOptions?: ValidationOptions) {
-  return function(object: Record<string, any>, propertyName: string): void {
+  return function (object: Record<string, any>, propertyName: string): void {
     registerDecorator({
       target: object.constructor,
       propertyName,

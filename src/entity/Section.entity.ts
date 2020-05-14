@@ -47,24 +47,15 @@ export class Section extends BaseEntity {
   order: number
 
   @Field(() => Resource, { nullable: true })
-  @OneToOne(
-    () => Resource,
-    (resource) => resource.baseSection
-  )
+  @OneToOne(() => Resource, (resource) => resource.baseSection)
   resource: Promise<Resource>
 
   @Field(() => [Section])
-  @OneToMany(
-    () => Section,
-    (section) => section.parentSection
-  )
+  @OneToMany(() => Section, (section) => section.parentSection)
   sections: Promise<Section[]>
 
   @Field(() => Section, { nullable: true })
-  @ManyToOne(
-    () => Section,
-    (section) => section.sections
-  )
+  @ManyToOne(() => Section, (section) => section.sections)
   parentSection: Promise<Section>
 
   @Field(() => Section, { nullable: true })

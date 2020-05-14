@@ -20,10 +20,7 @@ export class Progress extends BaseEntity {
   id: string
 
   @Field(() => User)
-  @ManyToOne(
-    () => User,
-    (user) => user.progressList
-  )
+  @ManyToOne(() => User, (user) => user.progressList)
   user: Promise<User>
 
   @Field(() => [Section])
