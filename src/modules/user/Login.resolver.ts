@@ -31,10 +31,6 @@ export class LoginResolver {
       throw new Error('Email vs Password mismatch.')
     }
 
-    if (!user.confirmed) {
-      throw new Error('Email is not yet confirmed.')
-    }
-
     sendRefreshToken(res, createRefreshToken(user))
     sendAccessToken(res, createAccessToken(user.id))
     return { accessToken: createAccessToken(user.id), user }
