@@ -98,7 +98,8 @@ export class Resource extends BaseEntity {
 
   async slugsForFirstPage(section: Section): Promise<string[]> {
     const subSections = await section.sections
-    if (subSections.length === 0) {
+    const filteredSubSections = subSections.filter((a) => !a.deleted)
+    if (filteredSubSections.length === 0) {
       if (await section.isBaseSection()) {
         return []
       }
@@ -106,11 +107,11 @@ export class Resource extends BaseEntity {
     }
     const dummySection = new Section()
     dummySection.order = 1000000000
-    const sectionWithLeastOrder = subSections
-      .filter((a) => !a.deleted)
-      .reduce((a: Section, b) => {
+    const sectionWithLeastOrder = filteredSubSections.reduce(
+      (a: Section, b) => {
         return a.order < b.order ? a : b
-      })
+      }
+    )
     const otherSlugs = await this.slugsForFirstPage(sectionWithLeastOrder)
     if (await section.isBaseSection()) {
       return otherSlugs
