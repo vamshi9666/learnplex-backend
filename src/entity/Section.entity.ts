@@ -92,7 +92,8 @@ export class Section extends BaseEntity {
   @Field(() => Boolean)
   async hasSubSections(): Promise<boolean> {
     const subSections = await this.sections
-    return subSections.length > 0
+    const filteredSubSections = subSections.filter((a) => !a.deleted)
+    return filteredSubSections.length > 0
   }
 
   @Field()
