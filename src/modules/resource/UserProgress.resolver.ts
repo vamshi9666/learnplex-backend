@@ -5,6 +5,7 @@ import { isAuthorized } from '../middleware/isAuthorized'
 import { User } from '../../entity/User.entity'
 import CurrentUser from '../../decorators/currentUser'
 import { getResource } from '../utils/getResourceFromUsernameAndSlug'
+import { Resource } from '../../entity/Resource.entity'
 
 @Resolver()
 export class UserProgressResolver {
@@ -41,6 +42,22 @@ export class UserProgressResolver {
     @CurrentUser() currentUser: User
   ): Promise<boolean> {
     const resource = await getResource(username, resourceSlug)
+    if (!resource) {
+      throw new Error('Invalid Resource')
+    }
+    const [progress] = await Progress.find({
+      where: { resource, user: currentUser },
+    })
+    return !!progress
+  }
+
+  @Query(() => Boolean)
+  @UseMiddleware(isAuthorized)
+  async hasEnrolledByResourceId(
+    @Arg('resourceId') resourceId: string,
+    @CurrentUser() currentUser: User
+  ): Promise<boolean> {
+    const [resource] = await Resource.find({ where: { id: resourceId } })
     if (!resource) {
       throw new Error('Invalid Resource')
     }

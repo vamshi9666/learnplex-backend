@@ -94,4 +94,12 @@ export class ResourcesResolver {
     resource.verified = true
     return resource.save()
   }
+
+  @Query(() => Resource, { nullable: true })
+  async resourceByOwnerUsernameAndSlug(
+    @Arg('username') username: string,
+    @Arg('resourceSlug') slug: string
+  ) {
+    return getResource(username, slug)
+  }
 }

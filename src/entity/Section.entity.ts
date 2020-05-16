@@ -58,9 +58,17 @@ export class Section extends BaseEntity {
   @ManyToOne(() => Section, (section) => section.sections)
   parentSection: Promise<Section>
 
+  @Field(() => String, { nullable: true })
+  @Column({ readonly: true, nullable: true })
+  parentSectionId: string
+
   @Field(() => Section, { nullable: true })
   @ManyToOne(() => Section)
   baseSection: Promise<Section>
+
+  @Field(() => String, { nullable: true })
+  @Column({ readonly: true, nullable: true })
+  baseSectionId: string
 
   @Field(() => Page, { nullable: true })
   @OneToOne(() => Page)
@@ -82,6 +90,90 @@ export class Section extends BaseEntity {
   @Field(() => Int, { nullable: true })
   @Column('int', { default: 0 })
   forkedVersion: number
+
+  @Field()
+  @Column({ default: '' })
+  slugsPath: string
+
+  @Field()
+  @Column({ default: '' })
+  pathWithSectionIds: string
+
+  @Field()
+  @Column({ default: '' })
+  previousSectionId: string
+
+  @Field()
+  @Column({ default: '' })
+  nextSectionId: string
+
+  @Field()
+  @Column({ default: '' })
+  firstLeafSectionId: string
+
+  @Field()
+  @Column({ default: '' })
+  firstLeafSlugsPath: string
+
+  @Field()
+  @Column({ default: '' })
+  lastLeafSectionId: string
+
+  @Field()
+  @Column({ default: '' })
+  lastLeafSlugsPath: string
+
+  @Field(() => String)
+  async nextSectionToGoTo(): Promise<string> {
+    if (!this.nextSectionId) {
+      return ''
+    }
+    const [nextSection] = await Section.find({
+      where: { id: this.nextSectionId },
+    })
+    if (!nextSection) {
+      return ''
+    }
+    return nextSection.firstLeafSectionId
+  }
+
+  @Field(() => String)
+  async previousSectionToGoTo(): Promise<string> {
+    if (!this.previousSectionId) {
+      return ''
+    }
+    const [previousSection] = await Section.find({
+      where: { id: this.previousSectionId },
+    })
+    if (!previousSection) {
+      return ''
+    }
+    return previousSection.lastLeafSectionId
+  }
+
+  @Field(() => String)
+  async previousSectionPath(): Promise<string> {
+    const previousSectionId = await this.previousSectionToGoTo()
+    if (!previousSectionId) return ''
+    const [previousSection] = await Section.find({
+      where: { id: previousSectionId },
+      take: 1,
+    })
+    if (!previousSection) return ''
+    return previousSection.slugsPath
+  }
+
+  @Field(() => String)
+  async nextSectionPath(): Promise<string> {
+    const nextSectionId = await this.nextSectionToGoTo()
+    if (!nextSectionId) return ''
+    const [nextSection] = await Section.find({
+      where: { id: nextSectionId },
+      take: 1,
+    })
+    if (!nextSection) return ''
+    return nextSection.slugsPath
+  }
 
   @Field(() => Boolean)
   async isPage(): Promise<boolean> {

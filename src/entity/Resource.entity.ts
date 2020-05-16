@@ -58,6 +58,10 @@ export class Resource extends BaseEntity {
   @JoinColumn()
   baseSection: Promise<Section>
 
+  @Field(() => String)
+  @Column({ readonly: true, nullable: true })
+  baseSectionId: string
+
   @Field(() => User)
   @ManyToOne(() => User, (user) => user.resources)
   user: Promise<User>
