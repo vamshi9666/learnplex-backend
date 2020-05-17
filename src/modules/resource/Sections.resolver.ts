@@ -38,7 +38,6 @@ export class SectionsResolver {
         sections.filter((section) => !section.deleted)
       )
     }
-    console.log({ sectionsListData })
     return sectionsListData
   }
 
