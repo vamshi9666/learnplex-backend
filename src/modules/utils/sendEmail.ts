@@ -42,17 +42,31 @@ export async function sendEmail(
     info = await transporter.sendMail({
       from: `"Coderplex " <${process.env.EMAIL_ID}>`,
       to: email,
-      subject: 'Verify your email - Coderplex',
-      text: `${url}`,
-      html: `<a href="${url}">Verify Email</a>`,
+      subject: 'Verify Your Email to Learn with Coderplex',
+      text: `Please [verify your email id](${url}) to join Coderplex and start learning or creating resources on any technology.
+      
+Best,
+Coderplex Team
+      `,
+      html: `<p></p>Please <a href="${url}">verify your email id</a> to join Coderplex 
+      and start learning or creating resources on any technology.</p>
+      <br />
+      <span>Best,<br />Coderplex Team</span>`,
     })
   } else if (type === MailType.ForgotPasswordEmail) {
     info = await transporter.sendMail({
       from: `"Coderplex " <${process.env.EMAIL_ID}>`,
       to: email,
-      subject: 'Change Password - Coderplex', // Subject line
-      text: `${url}`,
-      html: `<a href="${url}">Change Password</a>`,
+      subject: 'Reset Your Password to Continue Learning with Coderplex',
+      text: `Please Clink [this link](${url}) to reset your password and continue learning with Coderplex.
+      
+Best,
+Coderplex Team
+      `,
+      html: `<p>Please click <a href="${url}">this link</a> to reset your password 
+      and continue learning with Coderplex.</p>
+      <br />
+      <span>Best,<br />Coderplex Team</span>`,
     })
   }
 

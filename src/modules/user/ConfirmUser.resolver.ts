@@ -1,4 +1,4 @@
-import { Arg, Ctx, Mutation, Resolver } from 'type-graphql'
+import { Arg, Ctx, Mutation, Resolver, UseMiddleware } from 'type-graphql'
 
 import { redis } from '../../redis'
 import { User } from '../../entity/User.entity'
@@ -11,6 +11,10 @@ import {
 } from '../../utils/auth'
 import { MyContext } from '../../types/MyContext'
 import { LoginResponse } from './login/LoginResponse'
+import CurrentUser from '../../decorators/currentUser'
+import { MailType, sendEmail } from '../utils/sendEmail'
+import { createConfirmationUrl } from '../utils/createConfirmationUrl'
+import { isAuthorized } from '../middleware/isAuthorized'
 
 @Resolver()
 export class ConfirmUserResolver {
@@ -32,5 +36,18 @@ export class ConfirmUserResolver {
     sendRefreshToken(res, createRefreshToken(user))
     sendAccessToken(res, createAccessToken(user.id))
     return { accessToken: createAccessToken(user.id), user }
+  }
+
+  @UseMiddleware(isAuthorized)
+  @Mutation(() => Boolean)
+  async resendConfirmationEmail(
+    @CurrentUser() currentUser: User
+  ): Promise<boolean> {
+    sendEmail(
+      currentUser.email,
+      await createConfirmationUrl(currentUser.id),
+      MailType.ConfirmationEmail
+    )
+    return true
   }
 }
