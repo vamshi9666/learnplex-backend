@@ -20,8 +20,9 @@ export class CompleteSectionResolver {
       throw new Error('Invalid Resource')
     }
     const [progressExists] = await Progress.find({
-      where: { user: currentUser, resource },
+      where: { userId: currentUser.id, resourceId },
     })
+
     if (progressExists) {
       return progressExists
     }
