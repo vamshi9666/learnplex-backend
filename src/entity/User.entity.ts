@@ -22,7 +22,7 @@ export class User extends BaseEntity {
   id: number
 
   @Field({ nullable: true })
-  @Column()
+  @Column({ nullable: true })
   name: string
 
   @Column('int', { default: 0 })
