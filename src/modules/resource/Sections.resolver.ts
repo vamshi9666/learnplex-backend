@@ -1,11 +1,8 @@
-import { Arg, Mutation, Query, Resolver, UseMiddleware } from 'type-graphql'
+import { Arg, Query, Resolver } from 'type-graphql'
 
 import { Section } from '../../entity/Section.entity'
 import { Resource } from '../../entity/Resource.entity'
 import { getResource } from '../utils/getResourceFromUsernameAndSlug'
-import { isAuthorized } from '../middleware/isAuthorized'
-import { hasRole } from '../middleware/hasRole'
-import { UserRole } from '../../entity/enums/UserRole.enum'
 
 @Resolver()
 export class SectionsResolver {
@@ -62,85 +59,6 @@ export class SectionsResolver {
     @Arg('baseSectionId') baseSectionId: string
   ) {
     return this.getSectionListFromBaseSectionId(baseSectionId)
-  }
-
-  async getFirstLeaf(
-    section: Section,
-    paths: { firstLeafPath: string; lastLeafPath: string }
-  ): Promise<string> {
-    const subSections = await Section.find({
-      where: { parentSectionId: section.id, deleted: false },
-      order: {
-        order: 'ASC',
-      },
-    })
-    if (subSections.length === 0) {
-      return section.id
-    }
-    const firstSubSection = subSections[0]
-    paths.firstLeafPath = paths.firstLeafPath + '/' + firstSubSection.slug
-    return this.getFirstLeaf(firstSubSection, paths)
-  }
-
-  async getLastLeaf(
-    section: Section,
-    paths: { firstLeafPath: string; lastLeafPath: string }
-  ): Promise<string> {
-    const subSections = await Section.find({
-      where: { parentSectionId: section.id, deleted: false },
-      order: {
-        order: 'DESC',
-      },
-    })
-    if (subSections.length === 0) {
-      return section.id
-    }
-    const firstSubSection = subSections[0]
-    paths.lastLeafPath = paths.lastLeafPath + '/' + firstSubSection.slug
-    return this.getLastLeaf(firstSubSection, paths)
-  }
-
-  async setSlugsPath(currentSection: Section) {
-    let sections = await currentSection.sections
-    sections = sections.filter((section) => !section.deleted)
-    sections = sections.sort((a, b) => {
-      return a.order > b.order ? 1 : a.order < b.order ? -1 : 0
-    })
-    for (let index = 0; index < sections.length; index++) {
-      let section = sections[index]
-      section.slugsPath = currentSection.slugsPath + '/' + section.slug
-      const paths = {
-        firstLeafPath: section.slugsPath,
-        lastLeafPath: section.slugsPath,
-      }
-      section.firstLeafSectionId = await this.getFirstLeaf(section, paths)
-      section.firstLeafSlugsPath = paths.firstLeafPath
-      section.lastLeafSectionId = await this.getLastLeaf(section, paths)
-      section.lastLeafSlugsPath = paths.lastLeafPath
-      if (index - 1 >= 0) section.previousSectionId = sections[index - 1].id
-      else section.previousSectionId = currentSection.previousSectionId
-      if (index + 1 < sections.length)
-        section.nextSectionId = sections[index + 1].id
-      else section.nextSectionId = currentSection.nextSectionId
-      section.pathWithSectionIds =
-        currentSection.pathWithSectionIds + '/' + section.id
-      section = await section.save()
-      await this.setSlugsPath(section)
-    }
-  }
-
-  @UseMiddleware(isAuthorized, hasRole([UserRole.ADMIN]))
-  @Mutation(() => Boolean)
-  async initializeSlugsForAllSections() {
-    const resources = await Resource.find()
-    for (const resource of resources) {
-      let baseSection = await resource.baseSection
-      baseSection.slugsPath = ''
-      baseSection.pathWithSectionIds = ''
-      baseSection = await baseSection.save()
-      await this.setSlugsPath(baseSection)
-    }
-    return true
   }
 
   @Query(() => Section)

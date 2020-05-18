@@ -28,6 +28,7 @@ import { UpdateResourceResolver } from '../modules/resource/UpdateResource.resol
 import { SearchResourceResolver } from '../modules/resource/SearchResource.resolver'
 import { UpdateUserResolver } from '../modules/user/UpdateUser.resolver'
 import { PublishResourcesResolver } from '../modules/resource/PublishResources.resolver'
+import { PopulateSlugsResolver } from '../modules/resource/PopulateSlugs.resolver'
 
 export const createSchema: () => Promise<GraphQLSchema> = () =>
   buildSchema({
@@ -59,6 +60,7 @@ export const createSchema: () => Promise<GraphQLSchema> = () =>
       SearchResourceResolver,
       UpdateUserResolver,
       PublishResourcesResolver,
+      PopulateSlugsResolver,
     ],
     authChecker: ({ context: { req } }) => {
       return !!req.userId
