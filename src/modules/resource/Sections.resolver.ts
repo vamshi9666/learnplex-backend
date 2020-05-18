@@ -1,8 +1,11 @@
-import { Arg, Mutation, Query, Resolver } from 'type-graphql'
+import { Arg, Mutation, Query, Resolver, UseMiddleware } from 'type-graphql'
 
 import { Section } from '../../entity/Section.entity'
 import { Resource } from '../../entity/Resource.entity'
 import { getResource } from '../utils/getResourceFromUsernameAndSlug'
+import { isAuthorized } from '../middleware/isAuthorized'
+import { hasRole } from '../middleware/hasRole'
+import { UserRole } from '../../entity/enums/UserRole.enum'
 
 @Resolver()
 export class SectionsResolver {
@@ -126,6 +129,7 @@ export class SectionsResolver {
     }
   }
 
+  @UseMiddleware(isAuthorized, hasRole([UserRole.ADMIN]))
   @Mutation(() => Boolean)
   async initializeSlugsForAllSections() {
     const resources = await Resource.find()

@@ -15,7 +15,7 @@ export class ResourcesResolver {
   @UseMiddleware(isAuthorized)
   @Query(() => [Resource])
   async resources(@CurrentUser() currentUser: User): Promise<Resource[]> {
-    return currentUser.resources
+    return Resource.find({ where: { userId: currentUser.id, published: true } })
   }
 
   @Query(() => Resource)
@@ -37,7 +37,7 @@ export class ResourcesResolver {
     if (!user) {
       throw new Error('Invalid username')
     }
-    return user.resources
+    return Resource.find({ where: { userId: user.id, published: true } })
   }
 
   @Query(() => [Resource])
@@ -46,7 +46,7 @@ export class ResourcesResolver {
     if (!topic) {
       throw new Error('Invalid topic')
     }
-    return topic.resources
+    return Resource.find({ where: { topicId: topic.id, published: true } })
   }
 
   @Query(() => Resource, { nullable: true })
@@ -59,6 +59,11 @@ export class ResourcesResolver {
 
   @Query(() => [Resource])
   async allResources(): Promise<Resource[]> {
+    return Resource.find({ published: true })
+  }
+
+  @Query(() => [Resource])
+  async allResourcesForAdmin(): Promise<Resource[]> {
     return Resource.find()
   }
 
@@ -92,6 +97,19 @@ export class ResourcesResolver {
       throw new Error('Resource Not found')
     }
     resource.verified = true
+    return resource.save()
+  }
+
+  @UseMiddleware(isAuthorized, hasRole([UserRole.ADMIN]))
+  @Mutation(() => Resource)
+  async togglePrimaryStatus(
+    @Arg('resourceId') resourceId: string
+  ): Promise<Resource> {
+    const [resource] = await Resource.find({ where: { id: resourceId } })
+    if (!resource) {
+      throw new Error('Resource Not found')
+    }
+    resource.verified = !resource.verified
     return resource.save()
   }
 

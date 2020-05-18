@@ -70,6 +70,10 @@ export class Resource extends BaseEntity {
   @ManyToOne(() => Topic, (topic) => topic.resources)
   topic: Promise<Topic>
 
+  @Field(() => Int)
+  @Column({ readonly: true })
+  topicId: number
+
   @Field()
   @Column('bool', { default: false })
   verified: boolean
@@ -93,6 +97,10 @@ export class Resource extends BaseEntity {
   @Field(() => Int)
   @VersionColumn()
   version: number
+
+  @Field()
+  @Column('bool', { default: false })
+  published: boolean
 
   @BeforeInsert()
   @BeforeUpdate()
