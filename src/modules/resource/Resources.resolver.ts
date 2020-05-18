@@ -15,7 +15,7 @@ export class ResourcesResolver {
   @UseMiddleware(isAuthorized)
   @Query(() => [Resource])
   async resources(@CurrentUser() currentUser: User): Promise<Resource[]> {
-    return Resource.find({ where: { userId: currentUser.id, published: true } })
+    return Resource.find({ where: { userId: currentUser.id } })
   }
 
   @Query(() => Resource)
