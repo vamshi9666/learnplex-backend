@@ -39,7 +39,7 @@
     "prettier": "2.0.5",
     "ts-jest": "26.0.0",
     "ts-node-dev": "1.0.0-pre.44",
-    "typescript": "3.9.2"
+    "typescript": "3.9.3"
   },
   "dependencies": {
     "apollo-server-express": "^2.13.1",
