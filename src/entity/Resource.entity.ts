@@ -1,7 +1,5 @@
 import {
   BaseEntity,
-  BeforeInsert,
-  BeforeUpdate,
   Column,
   CreateDateColumn,
   Entity,
@@ -19,7 +17,6 @@ import { Field, ID, Int, ObjectType } from 'type-graphql'
 import { Section } from './Section.entity'
 import { User } from './User.entity'
 import { Topic } from './Topic.entity'
-import { slug } from '../utils/slug'
 
 @ObjectType()
 @Entity()
@@ -101,12 +98,6 @@ export class Resource extends BaseEntity {
   @Field()
   @Column('bool', { default: false })
   published: boolean
-
-  @BeforeInsert()
-  @BeforeUpdate()
-  setSlug(): void {
-    this.slug = slug(this.title)
-  }
 
   @Field(() => String)
   async firstPageSlugsPath(): Promise<string> {
