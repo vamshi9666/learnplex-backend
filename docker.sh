@@ -11,7 +11,7 @@ start() {
 
   echo
   echo "FIRING UP PG_ADMIN"
-    docker exec -it learnplex-backend_pgadmin_1 python /pgadmin4/setup.py --load-servers /tmp/servers.json
+    docker exec -it learnplex-pgadmin python /pgadmin4/setup.py --load-servers /tmp/servers.json
 
   echo
   echo "DONE, STATUS:"
