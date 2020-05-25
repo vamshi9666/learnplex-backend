@@ -195,7 +195,7 @@ export class Section extends BaseEntity {
 
   @Field(() => Boolean)
   async isBaseSection(): Promise<boolean> {
-    return !(await this.parentSection)
+    return this.order === -1
   }
 
   @Field(() => Boolean)
@@ -252,7 +252,7 @@ export class Section extends BaseEntity {
     if (this.isFork) {
       return
     }
-    if (await this.isBaseSection()) {
+    if (!(await this.parentSection)) {
       this.order = -1
     } else if (await this.isRoot()) {
       const baseSection = await this.baseSection
