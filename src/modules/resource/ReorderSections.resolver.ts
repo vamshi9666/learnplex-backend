@@ -13,7 +13,7 @@ export class ReorderSectionsResolver {
     { parentSectionId, sourceOrder, destinationOrder }: ReorderSectionsInput
   ): Promise<Section> {
     const [parentSection] = await Section.find({
-      where: { id: parentSectionId },
+      where: { id: parentSectionId, deleted: false },
       take: 1,
     })
     if (!parentSection) {
@@ -51,7 +51,7 @@ export class ReorderSectionsResolver {
       await Section.update({ id: sourceSectionId }, { order: destinationOrder })
     }
     const [updatedParent] = await Section.find({
-      where: { id: parentSectionId },
+      where: { id: parentSectionId, deleted: false },
       take: 1,
     })
     const sections = await updatedParent.sections

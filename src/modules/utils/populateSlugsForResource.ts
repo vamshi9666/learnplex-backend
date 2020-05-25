@@ -46,6 +46,8 @@ async function setSlugsPath(currentSection: Section) {
   for (let index = 0; index < sections.length; index++) {
     let section = sections[index]
     section.slugsPath = currentSection.slugsPath + '/' + section.slug
+    section.pathWithSectionIds =
+      currentSection.pathWithSectionIds + '/' + section.id
     const paths = {
       firstLeafPath: section.slugsPath,
       lastLeafPath: section.slugsPath,

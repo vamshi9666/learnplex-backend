@@ -129,7 +129,7 @@ export class Section extends BaseEntity {
       return ''
     }
     const [nextSection] = await Section.find({
-      where: { id: this.nextSectionId },
+      where: { id: this.nextSectionId, deleted: false },
     })
     if (!nextSection) {
       return ''
@@ -143,7 +143,7 @@ export class Section extends BaseEntity {
       return ''
     }
     const [previousSection] = await Section.find({
-      where: { id: this.previousSectionId },
+      where: { id: this.previousSectionId, deleted: false },
     })
     if (!previousSection) {
       return ''
@@ -156,7 +156,7 @@ export class Section extends BaseEntity {
     const previousSectionId = await this.previousSectionToGoTo()
     if (!previousSectionId) return ''
     const [previousSection] = await Section.find({
-      where: { id: previousSectionId },
+      where: { id: previousSectionId, deleted: false },
       take: 1,
     })
     if (!previousSection) return ''
@@ -168,7 +168,7 @@ export class Section extends BaseEntity {
     const nextSectionId = await this.nextSectionToGoTo()
     if (!nextSectionId) return ''
     const [nextSection] = await Section.find({
-      where: { id: nextSectionId },
+      where: { id: nextSectionId, deleted: false },
       take: 1,
     })
     if (!nextSection) return ''

@@ -13,7 +13,10 @@ export class UpdateSectionResolver {
   async updateSection(
     @Arg('data') { title, sectionId }: UpdateSectionInput
   ): Promise<Section> {
-    const [section] = await Section.find({ where: { id: sectionId }, take: 1 })
+    const [section] = await Section.find({
+      where: { id: sectionId, deleted: false },
+      take: 1,
+    })
     section.title = title
     return section.save()
   }
@@ -24,7 +27,10 @@ export class UpdateSectionResolver {
     @Arg('title') title: string,
     @Arg('sectionId') sectionId: string
   ): Promise<Section> {
-    const [section] = await Section.find({ where: { id: sectionId }, take: 1 })
+    const [section] = await Section.find({
+      where: { id: sectionId, deleted: false },
+      take: 1,
+    })
     if (!section) {
       throw new Error('Invalid Section Id')
     }
@@ -36,6 +42,10 @@ export class UpdateSectionResolver {
     })
     const savedSection = await section.save()
     await populateSlugsForResource({ resourceId: resource.id })
-    return savedSection
+    const [sectionAfterSlugsUpdate] = await Section.find({
+      where: { id: savedSection.id, deleted: false },
+      take: 1,
+    })
+    return sectionAfterSlugsUpdate
   }
 }

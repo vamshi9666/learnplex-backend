@@ -21,7 +21,7 @@ export class SectionsResolver {
 
   async getSectionListFromBaseSectionId(baseSectionId: string) {
     const [baseSection] = await Section.find({
-      where: { id: baseSectionId },
+      where: { id: baseSectionId, deleted: false },
       take: 1,
     })
     if (!baseSection) {
@@ -69,7 +69,7 @@ export class SectionsResolver {
     // const baseSection = await Section.find({ where: { id: baseSectionId } })
     // console.log({ slugsPath, baseSectionId, baseSection })
     const [section] = await Section.find({
-      where: { baseSectionId, slugsPath },
+      where: { baseSectionId, slugsPath, deleted: false },
       take: 1,
     })
     console.log({ section, slugsPath })
@@ -85,7 +85,7 @@ export class SectionsResolver {
     @Arg('sectionId') sectionId: string
   ): Promise<Section[]> {
     const [currentSection] = await Section.find({
-      where: { id: sectionId },
+      where: { id: sectionId, deleted: false },
       take: 1,
     })
 

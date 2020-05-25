@@ -15,7 +15,7 @@ export class AddSectionResolver {
     @Arg('data') { title, parentSectionId, content }: AddSectionInput
   ): Promise<Section> {
     const [parentSection] = await Section.find({
-      where: { id: parentSectionId },
+      where: { id: parentSectionId, deleted: false },
       take: 1,
     })
     let baseSectionId

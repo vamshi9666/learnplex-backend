@@ -40,7 +40,9 @@ export class CompleteSectionResolver {
     @Arg('sectionId') sectionId: string,
     @CurrentUser() currentUser: User
   ): Promise<Progress | null> {
-    const [section] = await Section.find({ where: { id: sectionId } })
+    const [section] = await Section.find({
+      where: { id: sectionId, deleted: false },
+    })
     const page = await section.page
     if (!page) {
       return null
