@@ -34,6 +34,7 @@ export class AddSectionResolver {
     newSection.parentSection = Promise.resolve(parentSection)
     newSection.sections = Promise.resolve([])
     newSection.baseSectionId = baseSectionId
+    newSection.depth = parentSection.depth + 1
     if (content) {
       const page = new Page()
       page.content = content

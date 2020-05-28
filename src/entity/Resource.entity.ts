@@ -3,12 +3,12 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  Index,
   JoinColumn,
   ManyToOne,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
-  Unique,
   UpdateDateColumn,
   VersionColumn,
 } from 'typeorm'
@@ -20,7 +20,6 @@ import { Topic } from './Topic.entity'
 
 @ObjectType()
 @Entity()
-@Unique(['slug', 'userId'])
 export class Resource extends BaseEntity {
   @Field(() => ID)
   @PrimaryGeneratedColumn('uuid')
@@ -31,6 +30,7 @@ export class Resource extends BaseEntity {
   title: string
 
   @Field()
+  @Index()
   @Column()
   slug: string
 
@@ -56,7 +56,7 @@ export class Resource extends BaseEntity {
   baseSection: Promise<Section>
 
   @Field(() => String)
-  @Column({ readonly: true, nullable: true })
+  @Column()
   baseSectionId: string
 
   @Field(() => User)
@@ -67,9 +67,9 @@ export class Resource extends BaseEntity {
   @ManyToOne(() => Topic, (topic) => topic.resources)
   topic: Promise<Topic>
 
-  @Field(() => Int)
-  @Column({ readonly: true })
-  topicId: number
+  @Field(() => String)
+  @Column()
+  topicId: string
 
   @Field()
   @Column('bool', { default: false })
@@ -80,7 +80,7 @@ export class Resource extends BaseEntity {
   description: string
 
   @Field(() => Int)
-  @Column({ readonly: true })
+  @Column()
   userId: number
 
   @Field()

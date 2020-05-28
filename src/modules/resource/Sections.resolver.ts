@@ -2,7 +2,7 @@ import { Arg, Query, Resolver } from 'type-graphql'
 
 import { Section } from '../../entity/Section.entity'
 import { Resource } from '../../entity/Resource.entity'
-import { getResource } from '../utils/getResourceFromUsernameAndSlug'
+import { getConnection } from 'typeorm'
 
 @Resolver()
 export class SectionsResolver {
@@ -19,7 +19,10 @@ export class SectionsResolver {
     return baseSection.sections
   }
 
-  async getSectionListFromBaseSectionId(baseSectionId: string) {
+  @Query(() => [Section])
+  async sectionsListByBaseSectionId(
+    @Arg('baseSectionId') baseSectionId: string
+  ) {
     const [baseSection] = await Section.find({
       where: { id: baseSectionId, deleted: false },
       take: 1,
@@ -41,42 +44,18 @@ export class SectionsResolver {
     return sectionsListData
   }
 
-  @Query(() => [Section])
-  async sectionsList(
-    @Arg('username') username: string,
-    @Arg('resourceSlug') resourceSlug: string
-  ): Promise<Section[]> {
-    const resource = await getResource(username, resourceSlug)
-    console.log(resource)
-    if (!resource) {
-      throw new Error('Resource not found')
-    }
-    return this.getSectionListFromBaseSectionId(resource.baseSectionId)
-  }
-
-  @Query(() => [Section])
-  async sectionsListByBaseSectionId(
-    @Arg('baseSectionId') baseSectionId: string
-  ) {
-    return this.getSectionListFromBaseSectionId(baseSectionId)
-  }
-
   @Query(() => Section)
   async sectionBySlugsPathAndBaseSectionId(
     @Arg('slugsPath') slugsPath: string,
     @Arg('baseSectionId') baseSectionId: string
   ) {
-    // const baseSection = await Section.find({ where: { id: baseSectionId } })
-    // console.log({ slugsPath, baseSectionId, baseSection })
     const [section] = await Section.find({
       where: { baseSectionId, slugsPath, deleted: false },
       take: 1,
     })
-    console.log({ section, slugsPath })
     if (!section) {
       throw new Error('Invalid path')
     }
-    console.log({ section })
     return section
   }
 
@@ -92,9 +71,19 @@ export class SectionsResolver {
     if (!currentSection) {
       throw new Error('Invalid section Id')
     }
-    const parentSectionId = currentSection.parentSectionId
-    return Section.find({
-      where: { parentSectionId, deleted: false },
-    })
+    return getConnection()
+      .getRepository(Section)
+      .createQueryBuilder('section')
+      .leftJoinAndSelect(
+        'section.sections',
+        'sub_section',
+        'sub_section.deleted = :isDeleted AND sub_section.parentSectionId = section.id',
+        { isDeleted: false }
+      )
+      .where(
+        'section.parentSectionId = :parentSectionId AND section.deleted = :isDeleted',
+        { isDeleted: false, parentSectionId: currentSection.parentSectionId }
+      )
+      .getMany()
   }
 }

@@ -37,6 +37,7 @@ export class ResourcesResolver {
   ): Promise<Resource> {
     const [resource] = await Resource.find({
       where: { slug: resourceSlug },
+      take: 1,
     })
     if (!resource) {
       throw new Error('Resource not found')
@@ -71,8 +72,13 @@ export class ResourcesResolver {
   }
 
   @Query(() => [Resource])
-  async allResources(): Promise<Resource[]> {
+  async allPublishedResources(): Promise<Resource[]> {
     return Resource.find({ published: true })
+  }
+
+  @Query(() => [Resource])
+  async allResources(): Promise<Resource[]> {
+    return Resource.find()
   }
 
   @Query(() => [Resource])

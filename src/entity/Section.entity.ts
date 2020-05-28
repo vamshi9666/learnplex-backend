@@ -5,6 +5,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  Index,
   JoinColumn,
   ManyToOne,
   OneToMany,
@@ -21,6 +22,9 @@ import { slug } from '../utils/slug'
 
 @ObjectType()
 @Entity()
+@Index(['baseSectionId', 'deleted'])
+@Index(['id', 'deleted'])
+@Index(['baseSectionId', 'slugsPath', 'deleted'])
 export class Section extends BaseEntity {
   @Field(() => ID)
   @PrimaryGeneratedColumn('uuid')
@@ -46,9 +50,17 @@ export class Section extends BaseEntity {
   @Column('int', { default: 0 })
   order: number
 
+  @Field(() => Int)
+  @Column('int', { default: -1 })
+  depth: number
+
   @Field(() => Resource, { nullable: true })
   @OneToOne(() => Resource, (resource) => resource.baseSection)
   resource: Promise<Resource>
+
+  @Field(() => String, { nullable: true })
+  @Column({ nullable: true })
+  resourceId: string
 
   @Field(() => [Section])
   @OneToMany(() => Section, (section) => section.parentSection)
@@ -74,6 +86,10 @@ export class Section extends BaseEntity {
   @OneToOne(() => Page)
   @JoinColumn()
   page: Promise<Page>
+
+  @Field(() => String, { nullable: true })
+  @Column({ nullable: true })
+  pageId: string
 
   @Field()
   @CreateDateColumn()
@@ -177,8 +193,7 @@ export class Section extends BaseEntity {
 
   @Field(() => Boolean)
   async isPage(): Promise<boolean> {
-    const page = await this.page
-    return !!page
+    return !!this.pageId
   }
 
   @Field(() => Boolean)
@@ -209,7 +224,7 @@ export class Section extends BaseEntity {
   }
 
   @Field(() => Int)
-  async depth(): Promise<number> {
+  async getDepth(): Promise<number> {
     if (await this.isBaseSection()) {
       return -1
     }
@@ -217,7 +232,7 @@ export class Section extends BaseEntity {
       return 0
     }
     const parent = await this.parentSection
-    const parentDepth = await parent.depth()
+    const parentDepth = await parent.getDepth()
     return parentDepth + 1
   }
 
