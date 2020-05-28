@@ -36,6 +36,7 @@ const main = async (): Promise<void> => {
 
   app.use(
     cors({
+      maxAge: 86400,
       credentials: true,
       origin: getOriginEndPoint(),
     })
