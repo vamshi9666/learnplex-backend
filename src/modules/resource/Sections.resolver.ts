@@ -2,7 +2,7 @@ import { Arg, Query, Resolver } from 'type-graphql'
 
 import { Section } from '../../entity/Section.entity'
 import { Resource } from '../../entity/Resource.entity'
-import { getResource } from '../utils/getResourceFromUsernameAndSlug'
+import { getConnection } from 'typeorm'
 
 @Resolver()
 export class SectionsResolver {
@@ -20,19 +20,21 @@ export class SectionsResolver {
   }
 
   @Query(() => [Section])
-  async sectionsList(
-    @Arg('username') username: string,
-    @Arg('resourceSlug') resourceSlug: string
-  ): Promise<Section[]> {
-    const resource = await getResource(username, resourceSlug)
-    if (!resource) {
-      throw new Error('Resource not found')
+  async sectionsListByBaseSectionId(
+    @Arg('baseSectionId') baseSectionId: string
+  ) {
+    const [baseSection] = await Section.find({
+      where: { id: baseSectionId, deleted: false },
+      take: 1,
+    })
+    if (!baseSection) {
+      throw new Error('Invalid base section id')
     }
-    const baseSection = await resource.baseSection
     const sectionsListData = [baseSection]
-    sectionsListData.push(
-      ...(await Section.find({ where: { baseSection, deleted: false } }))
-    )
+    const sections = await Section.find({
+      where: { baseSectionId, deleted: false },
+    })
+    sectionsListData.push(...sections)
     for (const section of sectionsListData) {
       const sections = await section.sections
       section.sections = Promise.resolve(
@@ -40,5 +42,48 @@ export class SectionsResolver {
       )
     }
     return sectionsListData
+  }
+
+  @Query(() => Section)
+  async sectionBySlugsPathAndBaseSectionId(
+    @Arg('slugsPath') slugsPath: string,
+    @Arg('baseSectionId') baseSectionId: string
+  ) {
+    const [section] = await Section.find({
+      where: { baseSectionId, slugsPath, deleted: false },
+      take: 1,
+    })
+    if (!section) {
+      throw new Error('Invalid path')
+    }
+    return section
+  }
+
+  @Query(() => [Section])
+  async siblingSections(
+    @Arg('sectionId') sectionId: string
+  ): Promise<Section[]> {
+    const [currentSection] = await Section.find({
+      where: { id: sectionId, deleted: false },
+      take: 1,
+    })
+
+    if (!currentSection) {
+      throw new Error('Invalid section Id')
+    }
+    return getConnection()
+      .getRepository(Section)
+      .createQueryBuilder('section')
+      .leftJoinAndSelect(
+        'section.sections',
+        'sub_section',
+        'sub_section.deleted = :isDeleted AND sub_section.parentSectionId = section.id',
+        { isDeleted: false }
+      )
+      .where(
+        'section.parentSectionId = :parentSectionId AND section.deleted = :isDeleted',
+        { isDeleted: false, parentSectionId: currentSection.parentSectionId }
+      )
+      .getMany()
   }
 }

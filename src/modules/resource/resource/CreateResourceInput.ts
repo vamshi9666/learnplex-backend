@@ -15,4 +15,7 @@ export class CreateResourceInput {
 
   @Field()
   description: string
+
+  @Field()
+  slug: string
 }

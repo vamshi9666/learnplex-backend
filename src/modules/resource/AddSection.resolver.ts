@@ -4,6 +4,8 @@ import { isAuthorized } from '../middleware/isAuthorized'
 import { AddSectionInput } from './resource/AddSectionInput'
 import { Section } from '../../entity/Section.entity'
 import { Page } from '../../entity/Page.entity'
+import { Resource } from '../../entity/Resource.entity'
+import { populateSlugsForResource } from '../utils/populateSlugsForResource'
 
 @Resolver()
 export class AddSectionResolver {
@@ -13,7 +15,17 @@ export class AddSectionResolver {
     @Arg('data') { title, parentSectionId, content }: AddSectionInput
   ): Promise<Section> {
     const [parentSection] = await Section.find({
-      where: { id: parentSectionId },
+      where: { id: parentSectionId, deleted: false },
+      take: 1,
+    })
+    let baseSectionId
+    if (await parentSection.isBaseSection()) {
+      baseSectionId = parentSectionId
+    } else {
+      baseSectionId = parentSection.baseSectionId
+    }
+    const [resource] = await Resource.find({
+      where: { baseSectionId },
       take: 1,
     })
 
@@ -21,11 +33,8 @@ export class AddSectionResolver {
     newSection.title = title
     newSection.parentSection = Promise.resolve(parentSection)
     newSection.sections = Promise.resolve([])
-    if (await parentSection.isBaseSection()) {
-      newSection.baseSection = Promise.resolve(parentSection)
-    } else {
-      newSection.baseSection = parentSection.baseSection
-    }
+    newSection.baseSectionId = baseSectionId
+    newSection.depth = parentSection.depth + 1
     if (content) {
       const page = new Page()
       page.content = content
@@ -33,6 +42,8 @@ export class AddSectionResolver {
       newSection.page = Promise.resolve(savedPage)
       return newSection.save()
     }
-    return newSection.save()
+    const savedSection = await newSection.save()
+    await populateSlugsForResource({ resourceId: resource.id })
+    return savedSection
   }
 }

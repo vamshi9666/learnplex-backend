@@ -5,12 +5,13 @@ import { isAuthorized } from '../middleware/isAuthorized'
 import CurrentUser from '../../decorators/currentUser'
 import { User } from '../../entity/User.entity'
 import { getResource } from '../utils/getResourceFromUsernameAndSlug'
+import { populateSlugsForResource } from '../utils/populateSlugsForResource'
 
 @Resolver()
 export class UpdateResourceResolver {
   @Mutation(() => Resource)
   @UseMiddleware(isAuthorized)
-  async updateResourceDescription(
+  async updateResourceDescriptionOld(
     @Arg('resourceSlug') resourceSlug: string,
     @Arg('description') description: string,
     @CurrentUser() currentUser: User
@@ -26,7 +27,28 @@ export class UpdateResourceResolver {
 
   @Mutation(() => Resource)
   @UseMiddleware(isAuthorized)
-  async updateResourceTitle(
+  async updateResourceDescription(
+    @Arg('resourceId') resourceId: string,
+    @Arg('description') description: string,
+    @CurrentUser() currentUser: User
+  ): Promise<Resource> {
+    const [resource] = await Resource.find({
+      where: { id: resourceId },
+      take: 1,
+    })
+    if (!resource) {
+      throw new Error('Resource Not Found')
+    }
+    if (currentUser.id !== resource.userId) {
+      throw new Error('Not Authorized')
+    }
+    resource.description = description
+    return resource.save()
+  }
+
+  @Mutation(() => Resource)
+  @UseMiddleware(isAuthorized)
+  async updateResourceTitleOld(
     @Arg('resourceSlug') resourceSlug: string,
     @Arg('title') title: string,
     @CurrentUser() currentUser: User
@@ -38,5 +60,49 @@ export class UpdateResourceResolver {
     }
     resource.title = title
     return resource.save()
+  }
+
+  @Mutation(() => Resource)
+  @UseMiddleware(isAuthorized)
+  async updateResourceTitle(
+    @Arg('resourceId') resourceId: string,
+    @Arg('title') title: string,
+    @CurrentUser() currentUser: User
+  ): Promise<Resource> {
+    const [resource] = await Resource.find({
+      where: { id: resourceId },
+      take: 1,
+    })
+    if (!resource) {
+      throw new Error('Resource Not Found')
+    }
+    if (currentUser.id !== resource.userId) {
+      throw new Error('Not Authorized')
+    }
+    resource.title = title
+    return resource.save()
+  }
+
+  @Mutation(() => Resource)
+  @UseMiddleware(isAuthorized)
+  async updateResourceSlug(
+    @Arg('resourceId') resourceId: string,
+    @Arg('updatedSlug') updatedSlug: string,
+    @CurrentUser() currentUser: User
+  ): Promise<Resource> {
+    const [resource] = await Resource.find({
+      where: { id: resourceId },
+      take: 1,
+    })
+    if (!resource) {
+      throw new Error('Invalid Resource')
+    }
+    if (currentUser.id !== resource.userId) {
+      throw new Error('Not Authorized')
+    }
+    resource.slug = updatedSlug
+    const updatedResource = await resource.save()
+    await populateSlugsForResource({ resourceId })
+    return updatedResource
   }
 }

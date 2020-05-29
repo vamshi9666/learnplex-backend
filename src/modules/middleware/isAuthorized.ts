@@ -42,12 +42,13 @@ export const refreshToken = async (context: MyContext) => {
 
 export const getAuthorizationPayloadFromToken = (context: MyContext) => {
   let payload
+  console.log({ cookies: JSON.stringify(context.req.cookies) })
 
   try {
     const token = context.req.cookies[`${process.env.ACCESS_COOKIE_NAME}`]
     payload = verify(token, process.env.ACCESS_TOKEN_SECRET!) as JWTAuthPayload
   } catch (e) {
-    console.error(e)
+    // console.error(e)
     try {
       payload = refreshToken(context)
     } catch (e) {

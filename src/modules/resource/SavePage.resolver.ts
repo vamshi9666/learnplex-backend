@@ -10,12 +10,17 @@ export class SavePageResolver {
   async savePage(
     @Arg('data') { sectionId, pageContent }: SavePageInput
   ): Promise<Section> {
-    const [section] = await Section.find({ where: { id: sectionId }, take: 1 })
+    const [section] = await Section.find({
+      where: { id: sectionId, deleted: false },
+      take: 1,
+    })
+    console.log({ page: await section.page })
     if (!(await section.page)) {
       const page = new Page()
       page.content = pageContent
-      const savedPage = await page.save()
-      section.page = Promise.resolve(savedPage)
+      await page.save()
+      console.log({ page })
+      section.pageId = page.id
       return section.save()
     }
     const page = await section.page

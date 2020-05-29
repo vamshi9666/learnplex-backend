@@ -19,7 +19,7 @@ export class IsUsernameAlreadyExistConstraint
 
 export function IsUsernameAlreadyExist(validationOptions?: ValidationOptions) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return function(object: Record<string, any>, propertyName: string): void {
+  return function (object: Record<string, any>, propertyName: string): void {
     registerDecorator({
       target: object.constructor,
       propertyName,

@@ -27,6 +27,11 @@ import { UserProgressResolver } from '../modules/resource/UserProgress.resolver'
 import { UpdateResourceResolver } from '../modules/resource/UpdateResource.resolver'
 import { SearchResourceResolver } from '../modules/resource/SearchResource.resolver'
 import { UpdateUserResolver } from '../modules/user/UpdateUser.resolver'
+import { PublishResourcesResolver } from '../modules/resource/PublishResources.resolver'
+import { PopulateSlugsResolver } from '../modules/resource/PopulateSlugs.resolver'
+import { CreateResourceResolverV2 } from '../modules/resolvers/resource/CreateResource.resolver'
+import { SectionsListResolver } from '../modules/resolvers/section/SectionsList.resolver'
+import { SetDepthsResolver } from '../modules/migrations/SetDepths.resolver'
 
 export const createSchema: () => Promise<GraphQLSchema> = () =>
   buildSchema({
@@ -57,6 +62,11 @@ export const createSchema: () => Promise<GraphQLSchema> = () =>
       UpdateResourceResolver,
       SearchResourceResolver,
       UpdateUserResolver,
+      PublishResourcesResolver,
+      PopulateSlugsResolver,
+      CreateResourceResolverV2,
+      SectionsListResolver,
+      SetDepthsResolver,
     ],
     authChecker: ({ context: { req } }) => {
       return !!req.userId

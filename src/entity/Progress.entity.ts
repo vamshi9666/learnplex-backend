@@ -1,5 +1,6 @@
 import {
   BaseEntity,
+  Column,
   Entity,
   JoinTable,
   ManyToMany,
@@ -20,11 +21,12 @@ export class Progress extends BaseEntity {
   id: string
 
   @Field(() => User)
-  @ManyToOne(
-    () => User,
-    (user) => user.progressList
-  )
+  @ManyToOne(() => User, (user) => user.progressList)
   user: Promise<User>
+
+  @Field(() => String, { nullable: true })
+  @Column({ readonly: true, nullable: true })
+  userId: string
 
   @Field(() => [Section])
   @ManyToMany(() => Section)
@@ -34,4 +36,8 @@ export class Progress extends BaseEntity {
   @Field(() => Resource)
   @ManyToOne(() => Resource)
   resource: Promise<Resource>
+
+  @Field(() => String, { nullable: true })
+  @Column({ readonly: true, nullable: true })
+  resourceId: string
 }

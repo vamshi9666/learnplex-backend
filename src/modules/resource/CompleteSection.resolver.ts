@@ -1,6 +1,5 @@
 import { Arg, Mutation, Resolver, UseMiddleware } from 'type-graphql'
 
-import { CompleteSectionInput } from './resource/CompleteSectionInput'
 import { isAuthorized } from '../middleware/isAuthorized'
 import CurrentUser from '../../decorators/currentUser'
 import { User } from '../../entity/User.entity'
@@ -21,8 +20,9 @@ export class CompleteSectionResolver {
       throw new Error('Invalid Resource')
     }
     const [progressExists] = await Progress.find({
-      where: { user: currentUser, resource },
+      where: { userId: currentUser.id, resourceId },
     })
+
     if (progressExists) {
       return progressExists
     }
@@ -37,10 +37,12 @@ export class CompleteSectionResolver {
   @Mutation(() => Progress, { nullable: true })
   @UseMiddleware(isAuthorized)
   async completeSection(
-    @Arg('data') { sectionId }: CompleteSectionInput,
+    @Arg('sectionId') sectionId: string,
     @CurrentUser() currentUser: User
   ): Promise<Progress | null> {
-    const [section] = await Section.find({ where: { id: sectionId } })
+    const [section] = await Section.find({
+      where: { id: sectionId, deleted: false },
+    })
     const page = await section.page
     if (!page) {
       return null
@@ -48,7 +50,7 @@ export class CompleteSectionResolver {
     const baseSection = await section.baseSection
     const resource = await baseSection.resource
     const [progress] = await Progress.find({
-      where: { user: currentUser, resource },
+      where: { userId: currentUser.id, resourceId: resource.id },
     })
     if (!progress) {
       const progress = new Progress()

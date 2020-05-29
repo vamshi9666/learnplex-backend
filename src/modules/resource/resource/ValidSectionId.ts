@@ -10,7 +10,7 @@ import { Section } from '../../../entity/Section.entity'
 @ValidatorConstraint({ async: true })
 export class ValidSectionIdConstraint implements ValidatorConstraintInterface {
   validate(id: string): Promise<boolean> {
-    return Section.find({ where: { id }, take: 1 }).then(
+    return Section.find({ where: { id, deleted: false }, take: 1 }).then(
       ([section]: Section[]) => {
         return !!section
       }
@@ -19,7 +19,7 @@ export class ValidSectionIdConstraint implements ValidatorConstraintInterface {
 }
 
 export function ValidSectionId(validationOptions?: ValidationOptions) {
-  return function(object: Record<string, any>, propertyName: string): void {
+  return function (object: Record<string, any>, propertyName: string): void {
     registerDecorator({
       target: object.constructor,
       propertyName,

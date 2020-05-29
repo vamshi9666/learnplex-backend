@@ -3,3 +3,5 @@ node_modules
 yarn-error.log
 dist
 .env
+pg-db
+database.env.sample

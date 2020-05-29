@@ -1,4 +1,4 @@
-import { Arg, Mutation, UseMiddleware } from 'type-graphql'
+import { Arg, Mutation, Resolver, UseMiddleware } from 'type-graphql'
 
 import { isAuthorized } from '../middleware/isAuthorized'
 import CurrentUser from '../../decorators/currentUser'
@@ -10,6 +10,7 @@ import { Page } from '../../entity/Page.entity'
 import { ForkResourceInput } from './resource/ForkResourceInput'
 import { slug } from '../../utils/slug'
 
+@Resolver()
 export class ForkResourceResolver {
   @Mutation(() => Resource, { nullable: true })
   @UseMiddleware(isAuthorized)

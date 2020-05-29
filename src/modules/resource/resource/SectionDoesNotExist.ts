@@ -18,7 +18,7 @@ export class SectionDoesNotExistConstraint
     if (relatedPropertyName === 'sectionId') {
       const sectionId = (args.object as any)[relatedPropertyName]
       const [section] = await Section.find({
-        where: { id: sectionId },
+        where: { id: sectionId, deleted: false },
         take: 1,
       })
       const parentSection = await section.parentSection
@@ -41,7 +41,7 @@ export function SectionDoesNotExist(
   propoerty: string,
   validationOptions?: ValidationOptions
 ) {
-  return function(object: Record<string, any>, propertyName: string): void {
+  return function (object: Record<string, any>, propertyName: string): void {
     registerDecorator({
       target: object.constructor,
       propertyName,

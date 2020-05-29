@@ -28,10 +28,7 @@ export class Topic extends BaseEntity {
   slug: string
 
   @Field(() => [Resource])
-  @OneToMany(
-    () => Resource,
-    (resource) => resource.topic
-  )
+  @OneToMany(() => Resource, (resource) => resource.topic)
   resources: Promise<Resource[]>
 
   @BeforeInsert()

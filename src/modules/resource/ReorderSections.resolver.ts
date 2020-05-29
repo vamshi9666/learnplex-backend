@@ -2,6 +2,8 @@ import { Arg, Mutation, Resolver } from 'type-graphql'
 import { Section } from '../../entity/Section.entity'
 import { Between, getConnection, In } from 'typeorm'
 import { ReorderSectionsInput } from './resource/ReorderSectionsInput'
+import { populateSlugsForResource } from '../utils/populateSlugsForResource'
+import { Resource } from '../../entity/Resource.entity'
 
 @Resolver()
 export class ReorderSectionsResolver {
@@ -11,7 +13,7 @@ export class ReorderSectionsResolver {
     { parentSectionId, sourceOrder, destinationOrder }: ReorderSectionsInput
   ): Promise<Section> {
     const [parentSection] = await Section.find({
-      where: { id: parentSectionId },
+      where: { id: parentSectionId, deleted: false },
       take: 1,
     })
     if (!parentSection) {
@@ -49,9 +51,16 @@ export class ReorderSectionsResolver {
       await Section.update({ id: sourceSectionId }, { order: destinationOrder })
     }
     const [updatedParent] = await Section.find({
-      where: { id: parentSectionId },
+      where: { id: parentSectionId, deleted: false },
       take: 1,
     })
+    const sections = await updatedParent.sections
+    updatedParent.sections = Promise.resolve(sections.filter((a) => !a.deleted))
+    const baseSectionId = (await updatedParent.isBaseSection())
+      ? updatedParent.id
+      : updatedParent.baseSectionId
+    const [resource] = await Resource.find({ where: { baseSectionId } })
+    await populateSlugsForResource({ resourceId: resource.id })
     return updatedParent
   }
 }

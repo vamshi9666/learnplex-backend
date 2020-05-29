@@ -4,11 +4,9 @@
   "host": "localhost",
   "port": 5432,
   "username": "postgres",
-  "password": "",
+  "password": "dbpwdpsql",
   "database": "coderplex",
   "synchronize": true,
   "logging": true,
-  "entities": [
-    "src/entity/**/*.ts"
-  ]
+  "entities": ["src/entity/**/*.ts"]
 }

@@ -20,7 +20,20 @@ export class UserProgressResolver {
       return null
     }
     const [progress] = await Progress.find({
-      where: { user: currentUser, resource },
+      where: { userId: currentUser.id, resourceId: resource.id },
+    })
+    return progress
+  }
+
+  @Query(() => Progress, { nullable: true })
+  @UseMiddleware(isAuthorized)
+  async userProgressByResourceId(
+    @Arg('resourceId') resourceId: string,
+    @CurrentUser() currentUser: User
+  ): Promise<Progress> {
+    const [progress] = await Progress.find({
+      where: { userId: currentUser.id, resourceId },
+      take: 1,
     })
     return progress
   }
@@ -30,7 +43,7 @@ export class UserProgressResolver {
   async userProgressList(
     @CurrentUser() currentUser: User
   ): Promise<Progress[]> {
-    return Progress.find({ where: { user: currentUser } })
+    return Progress.find({ where: { userId: currentUser.id } })
   }
 
   @Query(() => Boolean)
@@ -45,8 +58,50 @@ export class UserProgressResolver {
       throw new Error('Invalid Resource')
     }
     const [progress] = await Progress.find({
-      where: { resource, user: currentUser },
+      where: { resourceId: resource.id, userId: currentUser.id },
     })
     return !!progress
+  }
+
+  @Query(() => Boolean)
+  @UseMiddleware(isAuthorized)
+  async hasEnrolledByResourceId(
+    @Arg('resourceId') resourceId: string,
+    @CurrentUser() currentUser: User
+  ): Promise<boolean> {
+    console.log({ resourceId, currentUser })
+    const [progress] = await Progress.find({
+      where: { resourceId, userId: currentUser.id },
+      take: 1,
+    })
+    console.log({ progress })
+    return !!progress
+  }
+
+  @Query(() => Boolean)
+  @UseMiddleware(isAuthorized)
+  async hasCompletedSection(
+    @Arg('resourceId') resourceId: string,
+    @Arg('sectionId') sectionId: string,
+    @CurrentUser() currentUser: User
+  ) {
+    const progresses = await Progress.find({
+      where: {
+        resourceId,
+        userId: currentUser.id,
+      },
+    })
+    console.log({ progresses })
+    const [progress] = await Progress.find({
+      where: { resourceId, userId: currentUser.id },
+    })
+    console.log({ progress })
+    if (!progress) {
+      return false
+    }
+    const completedSections = await progress.completedSections
+    const completedSectionIds = completedSections.map((section) => section.id)
+    console.log(completedSectionIds, sectionId)
+    return completedSectionIds.includes(sectionId)
   }
 }

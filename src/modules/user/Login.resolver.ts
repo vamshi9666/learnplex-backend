@@ -15,24 +15,32 @@ import { LoginResponse } from './login/LoginResponse'
 export class LoginResolver {
   @Mutation(() => LoginResponse)
   async login(
-    @Arg('email') email: string,
+    @Arg('usernameOrEmail') usernameOrEmail: string,
     @Arg('password') password: string,
     @Ctx() { res }: MyContext
   ): Promise<LoginResponse> {
-    const [user] = await User.find({ where: { email }, take: 1 })
+    let user
+    const [userWithEmail] = await User.find({
+      where: { email: usernameOrEmail },
+      take: 1,
+    })
 
-    if (!user) {
-      throw new Error('Could not find user.')
+    if (!userWithEmail) {
+      const [userWithUsername] = await User.find({
+        where: { username: usernameOrEmail },
+      })
+      if (!userWithUsername) {
+        throw new Error('Could not find user.')
+      }
+      user = userWithUsername
+    } else {
+      user = userWithEmail
     }
 
     const valid = await compare(password, user.password)
 
     if (!valid) {
-      throw new Error('Email vs Password mismatch.')
-    }
-
-    if (!user.confirmed) {
-      throw new Error('Email is not yet confirmed.')
+      throw new Error('Email/Username vs Password mismatch.')
     }
 
     sendRefreshToken(res, createRefreshToken(user))

@@ -1,17 +1,26 @@
-import { Arg, Mutation, Resolver } from 'type-graphql'
+import { Arg, Ctx, Mutation, Resolver } from 'type-graphql'
 
 import { User } from '../../entity/User.entity'
 import { MailType, sendEmail } from '../utils/sendEmail'
 import { createConfirmationUrl } from '../utils/createConfirmationUrl'
 import { RegisterInput } from './register/RegisterInput'
+import { MyContext } from '../../types/MyContext'
+import {
+  createAccessToken,
+  createRefreshToken,
+  sendAccessToken,
+  sendRefreshToken,
+} from '../../utils/auth'
+import { LoginResponse } from './login/LoginResponse'
 
 @Resolver()
 export class RegisterResolver {
-  @Mutation(() => Boolean)
+  @Mutation(() => LoginResponse)
   async register(
     @Arg('data')
-    { name, email, password, username }: RegisterInput
-  ): Promise<boolean> {
+    { name, email, password, username }: RegisterInput,
+    @Ctx() { res }: MyContext
+  ): Promise<LoginResponse> {
     let user
 
     try {
@@ -23,7 +32,7 @@ export class RegisterResolver {
       }).save()
     } catch (e) {
       console.error(e)
-      return false
+      throw new Error('Error while registering user')
     }
 
     sendEmail(
@@ -32,6 +41,8 @@ export class RegisterResolver {
       MailType.ConfirmationEmail
     )
 
-    return true
+    sendRefreshToken(res, createRefreshToken(user))
+    sendAccessToken(res, createAccessToken(user.id))
+    return { accessToken: createAccessToken(user.id), user }
   }
 }

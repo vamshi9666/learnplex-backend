@@ -15,7 +15,7 @@ export class ResourcesResolver {
   @UseMiddleware(isAuthorized)
   @Query(() => [Resource])
   async resources(@CurrentUser() currentUser: User): Promise<Resource[]> {
-    return currentUser.resources
+    return Resource.find({ where: { userId: currentUser.id } })
   }
 
   @Query(() => Resource)
@@ -31,13 +31,27 @@ export class ResourcesResolver {
     return resource
   }
 
+  @Query(() => Resource)
+  async resourceBySlug(
+    @Arg('resourceSlug') resourceSlug: string
+  ): Promise<Resource> {
+    const [resource] = await Resource.find({
+      where: { slug: resourceSlug },
+      take: 1,
+    })
+    if (!resource) {
+      throw new Error('Resource not found')
+    }
+    return resource
+  }
+
   @Query(() => [Resource])
   async resourcesByUsername(@Arg('username') username: string) {
     const [user] = await User.find({ where: { username } })
     if (!user) {
       throw new Error('Invalid username')
     }
-    return user.resources
+    return Resource.find({ where: { userId: user.id, published: true } })
   }
 
   @Query(() => [Resource])
@@ -46,7 +60,7 @@ export class ResourcesResolver {
     if (!topic) {
       throw new Error('Invalid topic')
     }
-    return topic.resources
+    return Resource.find({ where: { topicId: topic.id, published: true } })
   }
 
   @Query(() => Resource, { nullable: true })
@@ -58,7 +72,17 @@ export class ResourcesResolver {
   }
 
   @Query(() => [Resource])
+  async allPublishedResources(): Promise<Resource[]> {
+    return Resource.find({ published: true })
+  }
+
+  @Query(() => [Resource])
   async allResources(): Promise<Resource[]> {
+    return Resource.find()
+  }
+
+  @Query(() => [Resource])
+  async allResourcesForAdmin(): Promise<Resource[]> {
     return Resource.find()
   }
 
@@ -93,5 +117,26 @@ export class ResourcesResolver {
     }
     resource.verified = true
     return resource.save()
+  }
+
+  @UseMiddleware(isAuthorized, hasRole([UserRole.ADMIN]))
+  @Mutation(() => Resource)
+  async togglePrimaryStatus(
+    @Arg('resourceId') resourceId: string
+  ): Promise<Resource> {
+    const [resource] = await Resource.find({ where: { id: resourceId } })
+    if (!resource) {
+      throw new Error('Resource Not found')
+    }
+    resource.verified = !resource.verified
+    return resource.save()
+  }
+
+  @Query(() => Resource, { nullable: true })
+  async resourceByOwnerUsernameAndSlug(
+    @Arg('username') username: string,
+    @Arg('resourceSlug') slug: string
+  ) {
+    return getResource(username, slug)
   }
 }

@@ -29,7 +29,7 @@ export class UsersResolver {
   @Query(() => [User])
   @UseMiddleware(isAuthorized, hasRole([UserRole.ADMIN]))
   users(): Promise<User[]> {
-    return User.find()
+    return User.find({ order: { id: 'ASC' } })
   }
 
   @Mutation(() => Boolean)
