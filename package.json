@@ -67,7 +67,7 @@
     "slugify": "^1.4.0",
     "ts-node": "^8.10.1",
     "type-graphql": "^0.17.6",
-    "typeorm": "^0.2.24",
+    "typeorm": "^0.3.0",
     "uuid": "^8.0.0"
   },
   "scripts": {
